@@ -92,24 +92,21 @@ form.addEventListener('submit', async (e) => {
 
   try {
     // 1) إنشاء الطلب أولاً للحصول على رقم الطلب (بدون ملفات)
-    const { data: order, error: insertError } = await supabaseClient
-      .from('orders')
-      .insert({
-        product_title: cartItem.title,
-        product_price: cartItem.price,
-        parent_name: document.getElementById('parentName').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        city: document.getElementById('city').value.trim(),
-        child_name: document.getElementById('childName').value.trim(),
-        child_age: document.getElementById('childAge').value,
-        child_gender: document.getElementById('childGender').value,
-        story_value: document.getElementById('storyValue').value.trim(),
-        notes: document.getElementById('notes').value.trim(),
-      })
-      .select()
-      .single();
+    const { data: orderRows, error: insertError } = await supabaseClient.rpc('create_order', {
+      p_product_title: cartItem.title,
+      p_product_price: cartItem.price,
+      p_parent_name: document.getElementById('parentName').value.trim(),
+      p_phone: document.getElementById('phone').value.trim(),
+      p_city: document.getElementById('city').value.trim(),
+      p_child_name: document.getElementById('childName').value.trim(),
+      p_child_age: document.getElementById('childAge').value,
+      p_child_gender: document.getElementById('childGender').value,
+      p_story_value: document.getElementById('storyValue').value.trim(),
+      p_notes: document.getElementById('notes').value.trim(),
+    });
 
     if (insertError) throw insertError;
+    const order = orderRows[0];
 
     // 2) رفع الصور والتسجيل الصوتي إلى Drive باسم رقم الطلب
     submitBtn.innerHTML = '<span class="spinner"></span> جاري رفع الصور...';
@@ -121,10 +118,11 @@ form.addEventListener('submit', async (e) => {
     if (voiceFile) voiceUrl = await uploadFileToDrive(voiceFile, order.order_number);
 
     // 3) تحديث الطلب بروابط الملفات
-    const { error: updateError } = await supabaseClient
-      .from('orders')
-      .update({ photo_urls: photoUrls, voice_note_url: voiceUrl })
-      .eq('id', order.id);
+    const { error: updateError } = await supabaseClient.rpc('add_order_files', {
+      p_order_id: order.id,
+      p_photo_urls: photoUrls,
+      p_voice_url: voiceUrl,
+    });
 
     if (updateError) throw updateError;
 
