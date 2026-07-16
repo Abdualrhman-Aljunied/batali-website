@@ -74,10 +74,10 @@ form.addEventListener('submit', async (e) => {
     const file = document.getElementById('receiptFile').files[0];
     const url = await uploadFileToDrive(file, orderNumber);
 
-    const { error } = await supabaseClient
-      .from('orders')
-      .update({ receipt_url: url })
-      .eq('order_number', orderNumber);
+    const { error } = await supabaseClient.rpc('add_receipt', {
+      p_order_number: orderNumber,
+      p_receipt_url: url,
+    });
     if (error) throw error;
 
     msgEl.innerHTML = '<div class="success-box">تم رفع السند بنجاح، سيتم مراجعة طلبك قريباً.</div>';
