@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إتمام الطلب | بطلي</title>
+<link rel="stylesheet" href="shared/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="container">
+  <div class="brand">📖 <span>بطلي</span></div>
+
+  <div class="card">
+    <h2 style="margin-bottom:6px;">إتمام الطلب</h2>
+    <p style="color:var(--clr-ink-soft);font-size:.9rem;margin-bottom:10px;" id="productSummary">جاري تحميل بيانات المنتج...</p>
+
+    <form id="orderForm">
+      <label class="required">اسم ولي الأمر</label>
+      <input type="text" id="parentName" required>
+
+      <label class="required">رقم الجوال (واتساب)</label>
+      <input type="tel" id="phone" placeholder="05xxxxxxxx" required>
+
+      <label class="required">المدينة</label>
+      <input type="text" id="city" required>
+
+      <hr style="margin:22px 0;border:none;border-top:1px dashed color-mix(in srgb, var(--clr-ink) 15%, transparent);">
+
+      <label class="required">اسم الطفل</label>
+      <input type="text" id="childName" required>
+
+      <label class="required">عمر الطفل</label>
+      <select id="childAge" required>
+        <option value="">اختر...</option>
+        <option>أقل من 4 سنوات</option>
+        <option>4-6 سنوات</option>
+        <option>7-9 سنوات</option>
+        <option>10 سنوات فأكثر</option>
+      </select>
+
+      <label class="required">جنس الطفل</label>
+      <select id="childGender" required>
+        <option value="">اختر...</option>
+        <option value="ولد">ولد</option>
+        <option value="بنت">بنت</option>
+      </select>
+
+      <label class="required">القيمة المراد غرسها</label>
+      <input type="text" id="storyValue" placeholder="مثال: الصدق، الأمانة، الشجاعة..." required>
+
+      <label>ملاحظات إضافية</label>
+      <textarea id="notes" placeholder="أي تفاصيل تحب إضافتها..."></textarea>
+
+      <hr style="margin:22px 0;border:none;border-top:1px dashed color-mix(in srgb, var(--clr-ink) 15%, transparent);">
+
+      <label class="required">صور الطفل</label>
+      <input type="file" id="childPhotos" accept="image/*" multiple required>
+      <p class="hint">يمكنك اختيار أكثر من صورة. صورة واضحة وحديثة من الأمام تُعطي أفضل نتيجة.</p>
+
+      <label>تسجيل صوتي (اختياري)</label>
+      <input type="file" id="voiceNote" accept="audio/*">
+
+      <button type="submit" class="btn btn-block" id="submitBtn" style="margin-top:26px;">إرسال الطلب</button>
+      <div id="formMsg"></div>
+    </form>
+  </div>
+</div>
+
+<script src="shared/config.js"></script>
+<script src="shared/drive-upload.js"></script>
+<script>
+// المنتج يصل عبر localStorage (يضبطه الموقع الرئيسي قبل التحويل لهذه الصفحة)
+const cartItem = JSON.parse(localStorage.getItem('batali_checkout_item') || 'null');
+const summaryEl = document.getElementById('productSummary');
+if (cartItem) {
+  summaryEl.textContent = `المنتج: ${cartItem.title} — ${cartItem.price} ريال`;
+} else {
+  summaryEl.textContent = 'لم يتم تحديد منتج — الرجاء العودة للموقع واختيار قصة أولاً.';
+  document.getElementById('submitBtn').disabled = true;
+}
+
+const form = document.getElementById('orderForm');
+const submitBtn = document.getElementById('submitBtn');
+const msgEl = document.getElementById('formMsg');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  msgEl.innerHTML = '';
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
+
+  try {
+    // 1) إنشاء الطلب أولاً للحصول على رقم الطلب (بدون ملفات)
+    const { data: order, error: insertError } = await supabaseClient
+      .from('orders')
+      .insert({
+        product_title: cartItem.title,
+        product_price: cartItem.price,
+        parent_name: document.getElementById('parentName').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        city: document.getElementById('city').value.trim(),
+        child_name: document.getElementById('childName').value.trim(),
+        child_age: document.getElementById('childAge').value,
+        child_gender: document.getElementById('childGender').value,
+        story_value: document.getElementById('storyValue').value.trim(),
+        notes: document.getElementById('notes').value.trim(),
+      })
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
+
+    // 2) رفع الصور والتسجيل الصوتي إلى Drive باسم رقم الطلب
+    submitBtn.innerHTML = '<span class="spinner"></span> جاري رفع الصور...';
+    const photoFiles = document.getElementById('childPhotos').files;
+    const photoUrls = photoFiles.length ? await uploadMultipleToDrive(photoFiles, order.order_number) : [];
+
+    let voiceUrl = null;
+    const voiceFile = document.getElementById('voiceNote').files[0];
+    if (voiceFile) voiceUrl = await uploadFileToDrive(voiceFile, order.order_number);
+
+    // 3) تحديث الطلب بروابط الملفات
+    const { error: updateError } = await supabaseClient
+      .from('orders')
+      .update({ photo_urls: photoUrls, voice_note_url: voiceUrl })
+      .eq('id', order.id);
+
+    if (updateError) throw updateError;
+
+    // 4) الانتقال لصفحة نجاح الطلب
+    localStorage.removeItem('batali_checkout_item');
+    window.location.href = `order-success.html?order=${order.order_number}`;
+
+  } catch (err) {
+    msgEl.innerHTML = `<div class="error-box">حدث خطأ: ${err.message}. حاول مرة أخرى.</div>`;
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'إرسال الطلب';
+  }
+});
+</script>
+</body>
+</html>

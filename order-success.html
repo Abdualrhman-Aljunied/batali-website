@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تم إنشاء الطلب | بطلي</title>
+<link rel="stylesheet" href="shared/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="container">
+  <div class="brand">📖 <span>بطلي</span></div>
+
+  <div class="card" style="text-align:center;">
+    <div style="font-size:2.4rem;">🎉</div>
+    <h2 style="margin:10px 0 4px;">تم إنشاء طلبك بنجاح</h2>
+    <p style="color:var(--clr-ink-soft);font-size:.92rem;">سيتم مراجعة طلبك بعد التحقق من التحويل البنكي.</p>
+
+    <div style="background:var(--clr-cream);border-radius:14px;padding:16px;margin:20px 0;">
+      <div style="font-size:.85rem;color:var(--clr-ink-soft);">رقم الطلب</div>
+      <div style="font-size:1.6rem;font-weight:900;color:var(--clr-primary);" id="orderNumberDisplay">—</div>
+    </div>
+
+    <div style="text-align:right;background:var(--clr-teal-light);border-radius:14px;padding:18px;margin-bottom:20px;">
+      <h4 style="color:var(--clr-teal);margin-bottom:12px;">بيانات التحويل البنكي</h4>
+      <div id="bankDetails" style="font-size:.9rem;line-height:2;"></div>
+      <div style="font-size:.85rem;color:var(--clr-ink-soft);margin-top:8px;">المبلغ المطلوب: <b id="amountDue">—</b></div>
+    </div>
+
+    <form id="receiptForm" style="text-align:right;">
+      <label class="required">رفع سند التحويل</label>
+      <input type="file" id="receiptFile" accept="image/*" required>
+      <button type="submit" class="btn btn-block" id="receiptBtn" style="margin-top:16px;">رفع السند</button>
+      <div id="receiptMsg"></div>
+    </form>
+
+    <a href="#" id="trackLink" class="btn btn-outline btn-block" style="margin-top:18px;">تتبع طلبي</a>
+  </div>
+</div>
+
+<script src="shared/config.js"></script>
+<script src="shared/drive-upload.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const orderNumber = params.get('order');
+document.getElementById('orderNumberDisplay').textContent = orderNumber || '—';
+document.getElementById('trackLink').href = `track.html?order=${orderNumber}`;
+
+document.getElementById('bankDetails').innerHTML = `
+  البنك: ${BANK_INFO.bankName}<br>
+  اسم الحساب: ${BANK_INFO.accountName}<br>
+  رقم الآيبان: ${BANK_INFO.iban}
+`;
+
+// عرض المبلغ المطلوب من بيانات الطلب
+(async () => {
+  const { data } = await supabaseClient
+    .from('order_public_status')
+    .select('product_price')
+    .eq('order_number', orderNumber)
+    .single();
+  if (data) document.getElementById('amountDue').textContent = data.product_price + ' ريال';
+})();
+
+const form = document.getElementById('receiptForm');
+const btn = document.getElementById('receiptBtn');
+const msgEl = document.getElementById('receiptMsg');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> جاري الرفع...';
+  try {
+    const file = document.getElementById('receiptFile').files[0];
+    const url = await uploadFileToDrive(file, orderNumber);
+
+    const { error } = await supabaseClient
+      .from('orders')
+      .update({ receipt_url: url })
+      .eq('order_number', orderNumber);
+    if (error) throw error;
+
+    msgEl.innerHTML = '<div class="success-box">تم رفع السند بنجاح، سيتم مراجعة طلبك قريباً.</div>';
+    btn.textContent = 'تم الرفع ✓';
+  } catch (err) {
+    msgEl.innerHTML = `<div class="error-box">فشل رفع السند: ${err.message}</div>`;
+    btn.disabled = false;
+    btn.textContent = 'رفع السند';
+  }
+});
+</script>
+</body>
+</html>
