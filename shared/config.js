@@ -3,7 +3,7 @@
 // ============================================================
 
 // من Supabase Dashboard → Project Settings → API
-const SUPABASE_URL = 'lnrmqzgzxnxwjkoqhhuu';
+const SUPABASE_URL = 'https://lnrmqzgzxnxwjkoqhhuu.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxucm1xemd6eG54d2prb3FoaHV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxOTg4NzIsImV4cCI6MjA5OTc3NDg3Mn0.iSFmreS-FdIZjoQaobv3ZodB-c16ZXKQ_QXVGdcZeqQ';
 
 // رابط تطبيق ويب (Google Apps Script) بعد نشره — راجع دليل التركيب
