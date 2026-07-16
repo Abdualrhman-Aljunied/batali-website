@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تتبع الطلب | بطلي</title>
+<link rel="stylesheet" href="shared/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="container">
+  <div class="brand">📖 <span>بطلي</span></div>
+
+  <div class="card">
+    <h2 style="margin-bottom:18px;">تتبع الطلب</h2>
+
+    <div id="searchBox">
+      <label>رقم الطلب</label>
+      <input type="text" id="orderInput" placeholder="مثال: BOT-0001">
+      <button class="btn btn-block" id="trackBtn" style="margin-top:14px;">تتبع</button>
+    </div>
+
+    <div id="result" style="margin-top:24px;"></div>
+  </div>
+</div>
+
+<script src="shared/config.js"></script>
+<script>
+const STEPS = ['awaiting_payment','paid','designing','awaiting_client_approval','ready_to_print','printing','shipped','completed'];
+
+async function trackOrder(orderNumber) {
+  const resultEl = document.getElementById('result');
+  resultEl.innerHTML = '<p style="color:var(--clr-ink-soft);">جاري البحث...</p>';
+
+  const { data, error } = await supabaseClient
+    .from('order_public_status')
+    .select('*')
+    .eq('order_number', orderNumber.trim())
+    .maybeSingle();
+
+  if (error || !data) {
+    resultEl.innerHTML = '<div class="error-box">لم يتم العثور على طلب بهذا الرقم. تأكد من الرقم وحاول مجدداً.</div>';
+    return;
+  }
+
+  const isCancelled = data.status === 'cancelled';
+  const currentIdx = STEPS.indexOf(data.status);
+
+  let timelineHtml = '';
+  if (!isCancelled) {
+    timelineHtml = `<div style="margin-top:18px;display:flex;flex-direction:column;gap:10px;">` +
+      STEPS.map((s, i) => `
+        <div style="display:flex;align-items:center;gap:10px;opacity:${i <= currentIdx ? '1' : '.4'};">
+          <div style="width:22px;height:22px;border-radius:50%;background:${i <= currentIdx ? 'var(--clr-teal)' : '#ddd'};flex-shrink:0;"></div>
+          <span style="font-size:.9rem;${i === currentIdx ? 'font-weight:800;' : ''}">${STATUS_LABELS[s]}</span>
+        </div>
+      `).join('') + `</div>`;
+  }
+
+  resultEl.innerHTML = `
+    <div style="text-align:center;margin-bottom:10px;">
+      <div style="font-size:.85rem;color:var(--clr-ink-soft);">رقم الطلب</div>
+      <div style="font-size:1.3rem;font-weight:900;">${data.order_number}</div>
+    </div>
+    <div style="text-align:center;margin-bottom:6px;">المنتج: ${data.product_title}</div>
+    <div style="text-align:center;">
+      <span class="badge" style="background:${STATUS_COLORS[data.status]};">${STATUS_LABELS[data.status]}</span>
+    </div>
+    <div style="text-align:center;font-size:.8rem;color:var(--clr-ink-soft);margin-top:8px;">
+      آخر تحديث: ${new Date(data.updated_at).toLocaleString('ar-SA')}<br>
+      تاريخ الإنشاء: ${new Date(data.created_at).toLocaleString('ar-SA')}
+    </div>
+    ${timelineHtml}
+  `;
+}
+
+document.getElementById('trackBtn').addEventListener('click', () => {
+  const val = document.getElementById('orderInput').value;
+  if (val.trim()) trackOrder(val);
+});
+
+// دعم الدخول المباشر عبر رابط ?order=BOT-0001
+const params = new URLSearchParams(location.search);
+const preset = params.get('order');
+if (preset) {
+  document.getElementById('orderInput').value = preset;
+  trackOrder(preset);
+}
+</script>
+</body>
+</html>
