@@ -46,14 +46,10 @@
   background:var(--clr-primary);color:#fff;
 }
 
-.products-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;}
-.product-check{
-  display:flex;align-items:center;gap:10px;border:2px solid color-mix(in srgb, var(--clr-primary) 15%, transparent);
-  border-radius:12px;padding:12px 14px;cursor:pointer;background:var(--clr-cream);
-  transition:border-color .2s;font-size:.88rem;font-weight:600;
-}
-.product-check:has(input:checked){border-color:var(--clr-primary);background:color-mix(in srgb, var(--clr-primary) 8%, transparent);}
-.product-check input{width:auto;accent-color:var(--clr-primary);}
+.field-error{color:var(--clr-primary-dark);font-size:.78rem;margin-top:5px;display:none;}
+.field-error.show{display:block;}
+.product-summary{background:var(--clr-teal-light);border-radius:12px;padding:14px 16px;margin-bottom:6px;}
+.product-summary b{color:var(--clr-teal);}
 
 .photo-guide{
   display:flex;gap:18px;align-items:flex-start;background:var(--clr-teal-light);
@@ -86,7 +82,7 @@
 <div class="container">
   <div class="card">
     <h2 style="margin-bottom:4px;">إتمام الطلب</h2>
-    <p style="color:var(--clr-ink-soft);font-size:.9rem;">عبّئ البيانات التالية لبدء تجهيز طلبك.</p>
+    <div class="product-summary" id="productSummary">جاري تحميل بيانات المنتج...</div>
 
     <form id="orderForm">
 
@@ -114,6 +110,7 @@
       <label class="required">عمر الطفل</label>
       <div class="picker-field placeholder" id="ageField" data-value="">اختر عمر الطفل</div>
       <div class="picker-panel" id="agePanel"></div>
+      <div class="field-error" id="ageError">الرجاء اختيار عمر الطفل</div>
 
       <label class="required">جنس الطفل</label>
       <div class="picker-field placeholder" id="genderField" data-value="">اختر جنس الطفل</div>
@@ -121,6 +118,7 @@
         <div class="picker-option" data-value="ولد">ولد</div>
         <div class="picker-option" data-value="بنت">بنت</div>
       </div>
+      <div class="field-error" id="genderError">الرجاء اختيار جنس الطفل</div>
 
       <label>أي معلومة عن الطفل تحبون ذكرها في القصة</label>
       <textarea id="childNote" placeholder="مثال: يحب كرة القدم، يخاف من الظلام..."></textarea>
@@ -146,20 +144,17 @@
         </div>
       </div>
 
-      <div class="section-title-sm">المنتج المطلوب</div>
-      <p class="section-sub-sm">يمكنك اختيار أكثر من منتج</p>
-      <div class="products-grid" id="productsGrid"></div>
-
-      <div class="section-title-sm">القيمة المراد غرسها في طفلك</div>
+      <div class="section-title-sm">القيمة المراد غرسها في طفلك <span style="color:var(--clr-primary);">*</span></div>
       <select id="storyValue" required>
         <option value="">اختر القيمة...</option>
       </select>
       <div id="valueOtherWrap" style="display:none;">
         <label>اكتب القيمة أو الهواية التي تريدها</label>
         <input type="text" id="valueOther">
+        <div class="field-error" id="valueOtherError">الرجاء كتابة القيمة أو الهواية التي تريدها</div>
       </div>
 
-      <div class="section-title-sm">الإهداء الذي يظهر داخل القصة</div>
+      <div class="section-title-sm">الإهداء الذي يظهر داخل القصة <span style="color:var(--clr-primary);">*</span></div>
       <select id="dedicationType" required>
         <option value="">اختر...</option>
         <option value="named">إهداء (باسم صاحب الإهداء)</option>
@@ -168,10 +163,12 @@
       <div id="dedicationNamedWrap" style="display:none;">
         <label>اسم صاحب الإهداء</label>
         <input type="text" id="dedicationName">
+        <div class="field-error" id="dedicationNameError">الرجاء كتابة اسم صاحب الإهداء</div>
       </div>
       <div id="dedicationCustomWrap" style="display:none;">
         <label>اكتب نص الإهداء الذي تريده</label>
         <textarea id="dedicationCustom"></textarea>
+        <div class="field-error" id="dedicationCustomError">الرجاء كتابة نص الإهداء</div>
       </div>
 
       <label>هل هناك هواية أو تفصيلة تحب إضافتها لشخصية الطفل في القصة؟</label>
@@ -237,6 +234,8 @@ function setupPicker(fieldEl, panelEl) {
     fieldEl.textContent = opt.textContent;
     fieldEl.classList.remove('placeholder');
     panelEl.classList.remove('open');
+    const errEl = fieldEl.id === 'ageField' ? document.getElementById('ageError') : document.getElementById('genderError');
+    errEl.classList.remove('show');
   });
 }
 document.addEventListener('click', (e) => {
@@ -253,19 +252,15 @@ phoneInput.addEventListener('input', () => {
   phoneInput.value = cleaned;
 });
 
-const PRODUCTS = [
-  { id: 'story', label: 'قصة (تحمل قيمة تُغرس في طفلك)' },
-  { id: 'coloring_book', label: 'دفتر تلوين' },
-  { id: 'puzzle_magazine', label: 'مجلة تحديات وألغاز وأنشطة' },
-  { id: 'hisni_magazine', label: 'مجلة حصني (كل أحصنة طفلك)' },
-  { id: 'full_package', label: 'الباقة الكاملة (تشمل جميع المنتجات)' },
-];
-document.getElementById('productsGrid').innerHTML = PRODUCTS.map(p => `
-  <label class="product-check">
-    <input type="checkbox" name="product" value="${p.id}">
-    ${p.label}
-  </label>
-`).join('');
+// المنتج يصل من السلة في الصفحة الرئيسية
+const cartItem = JSON.parse(localStorage.getItem('batali_checkout_item') || 'null');
+const summaryEl = document.getElementById('productSummary');
+if (cartItem) {
+  summaryEl.innerHTML = `المنتج المختار: <b>${cartItem.title}</b> — ${cartItem.price} ريال`;
+} else {
+  summaryEl.innerHTML = 'لم يتم تحديد منتج — الرجاء العودة للموقع واختيار قصة أولاً.';
+  document.getElementById('submitBtn').disabled = true;
+}
 
 const VALUES = ['الصدق','الأمانة','الشجاعة','بر الوالدين','التعاون','حسن الخلق','الصبر','الكرم','احترام الآخرين','تنظيم الوقت','تنمية المهارات','اختيار آخر'];
 const storyValueEl = document.getElementById('storyValue');
@@ -277,11 +272,20 @@ VALUES.forEach(v => {
 storyValueEl.addEventListener('change', () => {
   document.getElementById('valueOtherWrap').style.display = storyValueEl.value === 'اختيار آخر' ? 'block' : 'none';
 });
+document.getElementById('valueOther').addEventListener('input', () => {
+  document.getElementById('valueOtherError').classList.remove('show');
+});
 
 const dedicationType = document.getElementById('dedicationType');
 dedicationType.addEventListener('change', () => {
   document.getElementById('dedicationNamedWrap').style.display = dedicationType.value === 'named' ? 'block' : 'none';
   document.getElementById('dedicationCustomWrap').style.display = dedicationType.value === 'custom' ? 'block' : 'none';
+});
+document.getElementById('dedicationName').addEventListener('input', () => {
+  document.getElementById('dedicationNameError').classList.remove('show');
+});
+document.getElementById('dedicationCustom').addEventListener('input', () => {
+  document.getElementById('dedicationCustomError').classList.remove('show');
 });
 
 const form = document.getElementById('orderForm');
@@ -292,19 +296,20 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   msgEl.innerHTML = '';
 
-  if (!ageField.dataset.value) { alert('الرجاء اختيار عمر الطفل'); return; }
-  if (!genderField.dataset.value) { alert('الرجاء اختيار جنس الطفل'); return; }
-  const selectedProducts = Array.from(document.querySelectorAll('input[name="product"]:checked')).map(i => i.value);
-  if (selectedProducts.length === 0) { alert('الرجاء اختيار منتج واحد على الأقل'); return; }
-  if (storyValueEl.value === 'اختيار آخر' && !document.getElementById('valueOther').value.trim()) {
-    alert('الرجاء كتابة القيمة أو الهواية التي تريدها'); return;
-  }
-  if (dedicationType.value === 'named' && !document.getElementById('dedicationName').value.trim()) {
-    alert('الرجاء كتابة اسم صاحب الإهداء'); return;
-  }
-  if (dedicationType.value === 'custom' && !document.getElementById('dedicationCustom').value.trim()) {
-    alert('الرجاء كتابة نص الإهداء'); return;
-  }
+  let hasError = false;
+  const toggleError = (elId, condition) => {
+    const el = document.getElementById(elId);
+    el.classList.toggle('show', condition);
+    if (condition) hasError = true;
+  };
+
+  toggleError('ageError', !ageField.dataset.value);
+  toggleError('genderError', !genderField.dataset.value);
+  toggleError('valueOtherError', storyValueEl.value === 'اختيار آخر' && !document.getElementById('valueOther').value.trim());
+  toggleError('dedicationNameError', dedicationType.value === 'named' && !document.getElementById('dedicationName').value.trim());
+  toggleError('dedicationCustomError', dedicationType.value === 'custom' && !document.getElementById('dedicationCustom').value.trim());
+
+  if (hasError) return;
 
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
@@ -327,7 +332,8 @@ form.addEventListener('submit', async (e) => {
       p_child_age: ageField.dataset.value,
       p_child_gender: genderField.dataset.value,
       p_child_note: document.getElementById('childNote').value.trim(),
-      p_selected_products: selectedProducts,
+      p_product_title: cartItem.title,
+      p_product_price: cartItem.price,
       p_story_value: storyValueFinal,
       p_dedication_type: dedicationType.value,
       p_dedication_text: dedicationText,
