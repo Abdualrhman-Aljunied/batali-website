@@ -178,7 +178,7 @@ function openDetail(id) {
     <div class="detail-row"><b>عمر الطفل</b><span>${o.child_age || '—'}</span></div>
     <div class="detail-row"><b>جنس الطفل</b><span>${o.child_gender || '—'}</span></div>
     <div class="detail-row"><b>معلومة عن الطفل</b><span>${o.child_note || '—'}</span></div>
-    <div class="detail-row"><b>المنتجات المطلوبة</b><span>${(o.selected_products||[]).join('، ') || '—'}</span></div>
+    <div class="detail-row"><b>المنتج</b><span>${o.product_title} (${o.product_price} ريال)</span></div>
     <div class="detail-row"><b>القيمة المطلوبة</b><span>${o.story_value || '—'}</span></div>
     <div class="detail-row"><b>الإهداء</b><span>${o.dedication_text ? (o.dedication_type==='named' ? 'باسم: '+o.dedication_text : o.dedication_text) : '—'}</span></div>
     <div class="detail-row"><b>هواية/تفصيلة للقصة</b><span>${o.hobby_detail || '—'}</span></div>
