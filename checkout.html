@@ -6,60 +6,181 @@
 <title>إتمام الطلب | بطلي</title>
 <link rel="stylesheet" href="shared/styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+.page-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px;background:var(--clr-paper);box-shadow:var(--shadow-soft);
+  position:sticky;top:0;z-index:20;
+}
+.page-header .brand{margin:0;}
+.back-link{
+  display:flex;align-items:center;gap:6px;font-weight:700;font-size:.9rem;
+  color:var(--clr-ink-soft);
+}
+.back-link:hover{color:var(--clr-primary);}
+.page-footer{text-align:center;padding:26px 20px;color:var(--clr-ink-soft);font-size:.82rem;}
+
+.section-title-sm{font-size:1.05rem;font-weight:900;margin:26px 0 4px;color:var(--clr-primary);}
+.section-sub-sm{font-size:.82rem;color:var(--clr-ink-soft);margin-bottom:10px;}
+
+.phone-row{display:flex;gap:8px;}
+.phone-row select{flex:0 0 92px;}
+.phone-row input{flex:1;}
+
+.picker-field{
+  border:2px solid color-mix(in srgb, var(--clr-primary) 20%, transparent);
+  border-radius:12px;padding:12px 14px;background:var(--clr-cream);cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;font-size:.95rem;
+}
+.picker-field.placeholder{color:var(--clr-ink-soft);}
+.picker-panel{
+  display:none;position:relative;margin-top:8px;background:var(--clr-paper);
+  border-radius:12px;box-shadow:var(--shadow-soft);padding:10px;
+  grid-template-columns:repeat(4,1fr);gap:8px;
+}
+.picker-panel.open{display:grid;}
+.picker-panel.gender-panel{grid-template-columns:repeat(2,1fr);}
+.picker-option{
+  padding:10px 6px;border-radius:10px;text-align:center;font-size:.88rem;font-weight:700;
+  background:var(--clr-cream);color:var(--clr-ink);transition:background .2s, color .2s;
+}
+.picker-option:hover, .picker-option.selected{
+  background:var(--clr-primary);color:#fff;
+}
+
+.products-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;}
+.product-check{
+  display:flex;align-items:center;gap:10px;border:2px solid color-mix(in srgb, var(--clr-primary) 15%, transparent);
+  border-radius:12px;padding:12px 14px;cursor:pointer;background:var(--clr-cream);
+  transition:border-color .2s;font-size:.88rem;font-weight:600;
+}
+.product-check:has(input:checked){border-color:var(--clr-primary);background:color-mix(in srgb, var(--clr-primary) 8%, transparent);}
+.product-check input{width:auto;accent-color:var(--clr-primary);}
+
+.photo-guide{
+  display:flex;gap:14px;align-items:flex-start;background:var(--clr-teal-light);
+  border-radius:14px;padding:14px;margin-top:8px;
+}
+.photo-guide img{width:84px;height:84px;object-fit:cover;border-radius:10px;flex-shrink:0;}
+.photo-guide ul{padding-inline-start:18px;font-size:.82rem;color:var(--clr-ink);line-height:1.8;}
+.photo-guide .cap{font-size:.72rem;font-weight:800;color:var(--clr-teal);text-align:center;margin-top:4px;}
+
+.consent-row{display:flex;align-items:flex-start;gap:10px;margin-top:20px;background:var(--clr-cream);padding:14px;border-radius:12px;}
+.consent-row input{width:auto;margin-top:3px;accent-color:var(--clr-primary);}
+.consent-row label{margin:0;font-weight:500;font-size:.85rem;line-height:1.8;}
+</style>
 </head>
 <body>
-<div class="container">
-  <div class="brand">📖 <span>بطلي</span></div>
 
+<div class="page-header">
+  <a href="index.html" class="brand"><img src="images/logo-icon.png" alt="بطلي" style="height:32px;"></a>
+  <a href="#" id="backBtn" class="back-link">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+    رجوع
+  </a>
+</div>
+
+<div class="container">
   <div class="card">
-    <h2 style="margin-bottom:6px;">إتمام الطلب</h2>
-    <p style="color:var(--clr-ink-soft);font-size:.9rem;margin-bottom:10px;" id="productSummary">جاري تحميل بيانات المنتج...</p>
+    <h2 style="margin-bottom:4px;">إتمام الطلب</h2>
+    <p style="color:var(--clr-ink-soft);font-size:.9rem;">عبّئ البيانات التالية لبدء تجهيز طلبك.</p>
 
     <form id="orderForm">
-      <label class="required">اسم ولي الأمر</label>
-      <input type="text" id="parentName" required>
 
-      <label class="required">رقم الجوال (واتساب)</label>
-      <input type="tel" id="phone" placeholder="05xxxxxxxx" required>
+      <div class="section-title-sm">بيانات ولي الأمر</div>
+      <label class="required">اسم ولي الأمر</label>
+      <input type="text" id="parentName" placeholder="الاسم الثلاثي أو الرباعي" required>
+
+      <label class="required">رقم جوال الواتساب</label>
+      <div class="phone-row">
+        <input type="tel" id="phone" placeholder="5xxxxxxxx" required inputmode="numeric">
+        <select id="countryCode">
+          <option value="966">🇸🇦 966+</option>
+          <option value="971">🇦🇪 971+</option>
+          <option value="965">🇰🇼 965+</option>
+          <option value="973">🇧🇭 973+</option>
+          <option value="974">🇶🇦 974+</option>
+          <option value="968">🇴🇲 968+</option>
+        </select>
+      </div>
+      <div id="phoneError" class="error-box" style="display:none;">الرجاء إدخال أرقام فقط، أعد إدخال الرقم بطريقة صحيحة.</div>
+
+      <label class="required">البريد الإلكتروني</label>
+      <input type="email" id="email" required>
 
       <label class="required">المدينة</label>
       <input type="text" id="city" required>
 
-      <hr style="margin:22px 0;border:none;border-top:1px dashed color-mix(in srgb, var(--clr-ink) 15%, transparent);">
+      <div class="section-title-sm">بيانات البطل (الطفل)</div>
 
-      <label class="required">اسم الطفل</label>
+      <label class="required">اسم الطفل الكامل</label>
       <input type="text" id="childName" required>
 
       <label class="required">عمر الطفل</label>
-      <select id="childAge" required>
-        <option value="">اختر...</option>
-        <option>أقل من 4 سنوات</option>
-        <option>4-6 سنوات</option>
-        <option>7-9 سنوات</option>
-        <option>10 سنوات فأكثر</option>
-      </select>
+      <div class="picker-field placeholder" id="ageField" data-value="">اختر عمر الطفل</div>
+      <div class="picker-panel" id="agePanel"></div>
 
       <label class="required">جنس الطفل</label>
-      <select id="childGender" required>
-        <option value="">اختر...</option>
-        <option value="ولد">ولد</option>
-        <option value="بنت">بنت</option>
-      </select>
+      <div class="picker-field placeholder" id="genderField" data-value="">اختر جنس الطفل</div>
+      <div class="picker-panel gender-panel" id="genderPanel">
+        <div class="picker-option" data-value="ولد">ولد</div>
+        <div class="picker-option" data-value="بنت">بنت</div>
+      </div>
 
-      <label class="required">القيمة المراد غرسها</label>
-      <input type="text" id="storyValue" placeholder="مثال: الصدق، الأمانة، الشجاعة..." required>
+      <label>أي معلومة عن الطفل تحبون ذكرها في القصة</label>
+      <textarea id="childNote" placeholder="مثال: يحب كرة القدم، يخاف من الظلام..."></textarea>
 
-      <label>ملاحظات إضافية</label>
-      <textarea id="notes" placeholder="أي تفاصيل تحب إضافتها..."></textarea>
-
-      <hr style="margin:22px 0;border:none;border-top:1px dashed color-mix(in srgb, var(--clr-ink) 15%, transparent);">
-
-      <label class="required">صور الطفل</label>
+      <label class="required">صورة الطفل</label>
       <input type="file" id="childPhotos" accept="image/*" multiple required>
-      <p class="hint">يمكنك اختيار أكثر من صورة. صورة واضحة وحديثة من الأمام تُعطي أفضل نتيجة.</p>
+      <div class="photo-guide">
+        <div>
+          <img src="images/child-photo.png" alt="مثال على صورة مناسبة">
+          <div class="cap">مثال جيد ✅</div>
+        </div>
+        <ul>
+          <li>صورة واضحة وحديثة للطفل</li>
+          <li>يُفضّل أن تكون من الأمام، للوجه كاملاً</li>
+          <li>إضاءة جيدة ودقة عالية</li>
+          <li>بدون نظارة شمسية أو قبعة</li>
+          <li>ليست بعيدة، ولا يوجد ما يخفي الوجه</li>
+        </ul>
+      </div>
 
-      <label>تسجيل صوتي (اختياري)</label>
-      <input type="file" id="voiceNote" accept="audio/*">
+      <div class="section-title-sm">المنتج المطلوب</div>
+      <p class="section-sub-sm">يمكنك اختيار أكثر من منتج</p>
+      <div class="products-grid" id="productsGrid"></div>
+
+      <div class="section-title-sm">القيمة المراد غرسها في طفلك</div>
+      <select id="storyValue" required>
+        <option value="">اختر القيمة...</option>
+      </select>
+      <div id="valueOtherWrap" style="display:none;">
+        <label>اكتب القيمة أو الهواية التي تريدها</label>
+        <input type="text" id="valueOther">
+      </div>
+
+      <div class="section-title-sm">الإهداء الذي يظهر داخل القصة</div>
+      <select id="dedicationType" required>
+        <option value="">اختر...</option>
+        <option value="named">إهداء (باسم صاحب الإهداء)</option>
+        <option value="custom">اختيار آخر</option>
+      </select>
+      <div id="dedicationNamedWrap" style="display:none;">
+        <label>اسم صاحب الإهداء</label>
+        <input type="text" id="dedicationName">
+      </div>
+      <div id="dedicationCustomWrap" style="display:none;">
+        <label>اكتب نص الإهداء الذي تريده</label>
+        <textarea id="dedicationCustom"></textarea>
+      </div>
+
+      <label>هل هناك هواية أو تفصيلة تحب إضافتها لشخصية الطفل في القصة؟</label>
+      <textarea id="hobbyDetail" placeholder="مثال: يلبس نظارة، شعره مجعد..."></textarea>
+
+      <div class="consent-row">
+        <input type="checkbox" id="consentPrivacy" required>
+        <label for="consentPrivacy">أوافق على <a href="index.html#privacy" target="_blank" style="color:var(--clr-primary);text-decoration:underline;">سياسة الخصوصية</a> الخاصة بمنصة بطلي، وأؤكد أن الصورة المرفوعة هي لطفلي أو بإذن ولي أمره.</label>
+      </div>
 
       <button type="submit" class="btn btn-block" id="submitBtn" style="margin-top:26px;">إرسال الطلب</button>
       <div id="formMsg"></div>
@@ -67,18 +188,94 @@
   </div>
 </div>
 
+<div class="page-footer">
+  © 2026 منصة بطلي — <a href="index.html" style="text-decoration:underline;">العودة للصفحة الرئيسية</a>
+</div>
+
 <script src="shared/config.js"></script>
 <script src="shared/drive-upload.js"></script>
 <script>
-// المنتج يصل عبر localStorage (يضبطه الموقع الرئيسي قبل التحويل لهذه الصفحة)
-const cartItem = JSON.parse(localStorage.getItem('batali_checkout_item') || 'null');
-const summaryEl = document.getElementById('productSummary');
-if (cartItem) {
-  summaryEl.textContent = `المنتج: ${cartItem.title} — ${cartItem.price} ريال`;
-} else {
-  summaryEl.textContent = 'لم يتم تحديد منتج — الرجاء العودة للموقع واختيار قصة أولاً.';
-  document.getElementById('submitBtn').disabled = true;
+document.getElementById('backBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  if (document.referrer) window.history.back();
+  else window.location.href = 'index.html';
+});
+
+const ageField = document.getElementById('ageField');
+const agePanel = document.getElementById('agePanel');
+for (let age = 2; age <= 13; age++) {
+  const opt = document.createElement('div');
+  opt.className = 'picker-option';
+  opt.dataset.value = age;
+  opt.textContent = age + ' سنوات';
+  agePanel.appendChild(opt);
 }
+setupPicker(ageField, agePanel);
+
+const genderField = document.getElementById('genderField');
+const genderPanel = document.getElementById('genderPanel');
+setupPicker(genderField, genderPanel);
+
+function setupPicker(fieldEl, panelEl) {
+  fieldEl.addEventListener('click', () => {
+    document.querySelectorAll('.picker-panel.open').forEach(p => { if (p !== panelEl) p.classList.remove('open'); });
+    panelEl.classList.toggle('open');
+  });
+  panelEl.addEventListener('click', (e) => {
+    const opt = e.target.closest('.picker-option');
+    if (!opt) return;
+    panelEl.querySelectorAll('.picker-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    fieldEl.dataset.value = opt.dataset.value;
+    fieldEl.textContent = opt.textContent;
+    fieldEl.classList.remove('placeholder');
+    panelEl.classList.remove('open');
+  });
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.picker-field') && !e.target.closest('.picker-panel')) {
+    document.querySelectorAll('.picker-panel.open').forEach(p => p.classList.remove('open'));
+  }
+});
+
+const phoneInput = document.getElementById('phone');
+const phoneError = document.getElementById('phoneError');
+phoneInput.addEventListener('input', () => {
+  const cleaned = phoneInput.value.replace(/[^0-9]/g, '');
+  phoneError.style.display = (cleaned !== phoneInput.value) ? 'block' : 'none';
+  phoneInput.value = cleaned;
+});
+
+const PRODUCTS = [
+  { id: 'story', label: 'قصة (تحمل قيمة تُغرس في طفلك)' },
+  { id: 'coloring_book', label: 'دفتر تلوين' },
+  { id: 'puzzle_magazine', label: 'مجلة تحديات وألغاز وأنشطة' },
+  { id: 'hisni_magazine', label: 'مجلة حصني (كل أحصنة طفلك)' },
+  { id: 'full_package', label: 'الباقة الكاملة (تشمل جميع المنتجات)' },
+];
+document.getElementById('productsGrid').innerHTML = PRODUCTS.map(p => `
+  <label class="product-check">
+    <input type="checkbox" name="product" value="${p.id}">
+    ${p.label}
+  </label>
+`).join('');
+
+const VALUES = ['الصدق','الأمانة','الشجاعة','بر الوالدين','التعاون','حسن الخلق','الصبر','الكرم','احترام الآخرين','تنظيم الوقت','تنمية المهارات','اختيار آخر'];
+const storyValueEl = document.getElementById('storyValue');
+VALUES.forEach(v => {
+  const opt = document.createElement('option');
+  opt.value = v; opt.textContent = v;
+  storyValueEl.appendChild(opt);
+});
+storyValueEl.addEventListener('change', () => {
+  document.getElementById('valueOtherWrap').style.display = storyValueEl.value === 'اختيار آخر' ? 'block' : 'none';
+});
+
+const dedicationType = document.getElementById('dedicationType');
+dedicationType.addEventListener('change', () => {
+  document.getElementById('dedicationNamedWrap').style.display = dedicationType.value === 'named' ? 'block' : 'none';
+  document.getElementById('dedicationCustomWrap').style.display = dedicationType.value === 'custom' ? 'block' : 'none';
+});
 
 const form = document.getElementById('orderForm');
 const submitBtn = document.getElementById('submitBtn');
@@ -87,47 +284,55 @@ const msgEl = document.getElementById('formMsg');
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   msgEl.innerHTML = '';
+
+  if (!ageField.dataset.value) { alert('الرجاء اختيار عمر الطفل'); return; }
+  if (!genderField.dataset.value) { alert('الرجاء اختيار جنس الطفل'); return; }
+  const selectedProducts = Array.from(document.querySelectorAll('input[name="product"]:checked')).map(i => i.value);
+  if (selectedProducts.length === 0) { alert('الرجاء اختيار منتج واحد على الأقل'); return; }
+
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
 
   try {
-    // 1) إنشاء الطلب أولاً للحصول على رقم الطلب (بدون ملفات)
+    const fullPhone = document.getElementById('countryCode').value + phoneInput.value;
+    const dedicationText = dedicationType.value === 'named'
+      ? document.getElementById('dedicationName').value.trim()
+      : document.getElementById('dedicationCustom').value.trim();
+    const storyValueFinal = storyValueEl.value === 'اختيار آخر'
+      ? document.getElementById('valueOther').value.trim()
+      : storyValueEl.value;
+
     const { data: orderRows, error: insertError } = await supabaseClient.rpc('create_order', {
-      p_product_title: cartItem.title,
-      p_product_price: cartItem.price,
       p_parent_name: document.getElementById('parentName').value.trim(),
-      p_phone: document.getElementById('phone').value.trim(),
+      p_phone: fullPhone,
+      p_email: document.getElementById('email').value.trim(),
       p_city: document.getElementById('city').value.trim(),
       p_child_name: document.getElementById('childName').value.trim(),
-      p_child_age: document.getElementById('childAge').value,
-      p_child_gender: document.getElementById('childGender').value,
-      p_story_value: document.getElementById('storyValue').value.trim(),
-      p_notes: document.getElementById('notes').value.trim(),
+      p_child_age: ageField.dataset.value,
+      p_child_gender: genderField.dataset.value,
+      p_child_note: document.getElementById('childNote').value.trim(),
+      p_selected_products: selectedProducts,
+      p_story_value: storyValueFinal,
+      p_dedication_type: dedicationType.value,
+      p_dedication_text: dedicationText,
+      p_hobby_detail: document.getElementById('hobbyDetail').value.trim(),
+      p_consent_privacy: document.getElementById('consentPrivacy').checked,
     });
 
     if (insertError) throw insertError;
     const order = orderRows[0];
 
-    // 2) رفع الصور والتسجيل الصوتي إلى Drive باسم رقم الطلب
     submitBtn.innerHTML = '<span class="spinner"></span> جاري رفع الصور...';
     const photoFiles = document.getElementById('childPhotos').files;
     const photoUrls = photoFiles.length ? await uploadMultipleToDrive(photoFiles, order.order_number) : [];
 
-    let voiceUrl = null;
-    const voiceFile = document.getElementById('voiceNote').files[0];
-    if (voiceFile) voiceUrl = await uploadFileToDrive(voiceFile, order.order_number);
-
-    // 3) تحديث الطلب بروابط الملفات
     const { error: updateError } = await supabaseClient.rpc('add_order_files', {
       p_order_id: order.id,
       p_photo_urls: photoUrls,
-      p_voice_url: voiceUrl,
+      p_voice_url: null,
     });
-
     if (updateError) throw updateError;
 
-    // 4) الانتقال لصفحة نجاح الطلب
-    localStorage.removeItem('batali_checkout_item');
     window.location.href = `order-success.html?order=${order.order_number}`;
 
   } catch (err) {
