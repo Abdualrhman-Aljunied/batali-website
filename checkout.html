@@ -23,9 +23,7 @@
 .section-title-sm{font-size:1.05rem;font-weight:900;margin:26px 0 4px;color:var(--clr-primary);}
 .section-sub-sm{font-size:.82rem;color:var(--clr-ink-soft);margin-bottom:10px;}
 
-.phone-row{display:flex;gap:8px;}
-.phone-row select{flex:0 0 92px;}
-.phone-row input{flex:1;}
+.phone-row input{width:100%;}
 
 .picker-field{
   border:2px solid color-mix(in srgb, var(--clr-primary) 20%, transparent);
@@ -58,12 +56,17 @@
 .product-check input{width:auto;accent-color:var(--clr-primary);}
 
 .photo-guide{
-  display:flex;gap:14px;align-items:flex-start;background:var(--clr-teal-light);
+  display:flex;gap:18px;align-items:flex-start;background:var(--clr-teal-light);
   border-radius:14px;padding:14px;margin-top:8px;
 }
-.photo-guide img{width:84px;height:84px;object-fit:cover;border-radius:10px;flex-shrink:0;}
-.photo-guide ul{padding-inline-start:18px;font-size:.82rem;color:var(--clr-ink);line-height:1.8;}
-.photo-guide .cap{font-size:.72rem;font-weight:800;color:var(--clr-teal);text-align:center;margin-top:4px;}
+.photo-guide img{width:150px;height:150px;object-fit:cover;border-radius:12px;flex-shrink:0;cursor:pointer;transition:transform .2s;}
+.photo-guide img:hover{transform:scale(1.03);}
+.photo-guide .tips-cols{display:flex;gap:18px;flex:1;}
+.photo-guide ul{padding-inline-start:18px;font-size:.82rem;color:var(--clr-ink);line-height:1.9;flex:1;}
+.photo-guide .cap{font-size:.72rem;font-weight:800;color:var(--clr-teal);text-align:center;margin-top:6px;}
+.lightbox{position:fixed;inset:0;background:rgba(20,12,8,.75);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:min(90vw,420px);max-height:80vh;border-radius:14px;}
 
 .consent-row{display:flex;align-items:flex-start;gap:10px;margin-top:20px;background:var(--clr-cream);padding:14px;border-radius:12px;}
 .consent-row input{width:auto;margin-top:3px;accent-color:var(--clr-primary);}
@@ -93,15 +96,7 @@
 
       <label class="required">رقم جوال الواتساب</label>
       <div class="phone-row">
-        <input type="tel" id="phone" placeholder="5xxxxxxxx" required inputmode="numeric">
-        <select id="countryCode">
-          <option value="966">🇸🇦 966+</option>
-          <option value="971">🇦🇪 971+</option>
-          <option value="965">🇰🇼 965+</option>
-          <option value="973">🇧🇭 973+</option>
-          <option value="974">🇶🇦 974+</option>
-          <option value="968">🇴🇲 968+</option>
-        </select>
+        <input type="tel" id="phone" placeholder="05xxxxxxxx" required inputmode="numeric">
       </div>
       <div id="phoneError" class="error-box" style="display:none;">الرجاء إدخال أرقام فقط، أعد إدخال الرقم بطريقة صحيحة.</div>
 
@@ -134,16 +129,21 @@
       <input type="file" id="childPhotos" accept="image/*" multiple required>
       <div class="photo-guide">
         <div>
-          <img src="images/child-photo.png" alt="مثال على صورة مناسبة">
-          <div class="cap">مثال جيد ✅</div>
+          <img src="images/child-photo.png" alt="مثال على صورة مناسبة" onclick="openLightbox()">
+          <div class="cap">اضغط على الصورة لتكبيرها 🔍</div>
         </div>
-        <ul>
-          <li>صورة واضحة وحديثة للطفل</li>
-          <li>يُفضّل أن تكون من الأمام، للوجه كاملاً</li>
-          <li>إضاءة جيدة ودقة عالية</li>
-          <li>بدون نظارة شمسية أو قبعة</li>
-          <li>ليست بعيدة، ولا يوجد ما يخفي الوجه</li>
-        </ul>
+        <div class="tips-cols">
+          <ul>
+            <li>صورة واضحة وحديثة للطفل</li>
+            <li>يُفضّل أن تكون من الأمام</li>
+            <li>للوجه كاملاً</li>
+          </ul>
+          <ul>
+            <li>إضاءة جيدة ودقة عالية</li>
+            <li>بدون نظارة شمسية أو قبعة</li>
+            <li>ليست بعيدة، ولا يوجد ما يخفي الوجه</li>
+          </ul>
+        </div>
       </div>
 
       <div class="section-title-sm">المنتج المطلوب</div>
@@ -188,6 +188,10 @@
   </div>
 </div>
 
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img src="images/child-photo.png" alt="مثال على صورة مناسبة">
+</div>
+
 <div class="page-footer">
   © 2026 منصة بطلي — <a href="index.html" style="text-decoration:underline;">العودة للصفحة الرئيسية</a>
 </div>
@@ -195,6 +199,9 @@
 <script src="shared/config.js"></script>
 <script src="shared/drive-upload.js"></script>
 <script>
+function openLightbox(){ document.getElementById('lightbox').classList.add('open'); }
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
+
 document.getElementById('backBtn').addEventListener('click', (e) => {
   e.preventDefault();
   if (document.referrer) window.history.back();
@@ -289,12 +296,21 @@ form.addEventListener('submit', async (e) => {
   if (!genderField.dataset.value) { alert('الرجاء اختيار جنس الطفل'); return; }
   const selectedProducts = Array.from(document.querySelectorAll('input[name="product"]:checked')).map(i => i.value);
   if (selectedProducts.length === 0) { alert('الرجاء اختيار منتج واحد على الأقل'); return; }
+  if (storyValueEl.value === 'اختيار آخر' && !document.getElementById('valueOther').value.trim()) {
+    alert('الرجاء كتابة القيمة أو الهواية التي تريدها'); return;
+  }
+  if (dedicationType.value === 'named' && !document.getElementById('dedicationName').value.trim()) {
+    alert('الرجاء كتابة اسم صاحب الإهداء'); return;
+  }
+  if (dedicationType.value === 'custom' && !document.getElementById('dedicationCustom').value.trim()) {
+    alert('الرجاء كتابة نص الإهداء'); return;
+  }
 
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
 
   try {
-    const fullPhone = document.getElementById('countryCode').value + phoneInput.value;
+    const fullPhone = phoneInput.value;
     const dedicationText = dedicationType.value === 'named'
       ? document.getElementById('dedicationName').value.trim()
       : document.getElementById('dedicationCustom').value.trim();
