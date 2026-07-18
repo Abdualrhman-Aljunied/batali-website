@@ -6,25 +6,73 @@
 <title>تم إنشاء الطلب | بطلي</title>
 <link rel="stylesheet" href="shared/styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+.page-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px;background:var(--clr-paper);box-shadow:var(--shadow-soft);
+  position:sticky;top:0;z-index:20;
+}
+.page-header .brand{margin:0;}
+.back-link{display:flex;align-items:center;gap:6px;font-weight:700;font-size:.9rem;color:var(--clr-ink-soft);}
+.back-link:hover{color:var(--clr-primary);}
+.page-footer{text-align:center;padding:26px 20px;color:var(--clr-ink-soft);font-size:.82rem;}
+
+.order-number-box{
+  background:var(--clr-cream);border-radius:14px;padding:16px;margin:20px 0;cursor:pointer;
+  transition:background .2s;
+}
+.order-number-box:hover{background:color-mix(in srgb, var(--clr-primary) 8%, var(--clr-cream));}
+.order-number-box .num{font-size:1.6rem;font-weight:900;color:var(--clr-primary);}
+.copy-hint{font-size:.75rem;color:var(--clr-ink-soft);margin-top:6px;}
+.copy-hint.copied{color:var(--clr-teal);font-weight:800;}
+
+.transfer-note{font-size:.88rem;color:var(--clr-ink);margin-bottom:14px;text-align:right;}
+.bank-card{
+  display:flex;align-items:center;gap:14px;background:var(--clr-paper);border:2px solid var(--bank-color, var(--clr-primary));
+  border-radius:14px;padding:14px 16px;margin-bottom:12px;text-align:right;
+}
+.bank-logo{
+  width:52px;height:52px;border-radius:12px;background:var(--bank-color, var(--clr-primary));
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;
+}
+.bank-logo img{width:100%;height:100%;object-fit:contain;}
+.bank-logo span{color:#fff;font-weight:900;font-size:1.1rem;}
+.bank-info{flex:1;font-size:.86rem;line-height:1.9;}
+.bank-info b{color:var(--bank-color, var(--clr-primary));}
+.copy-account-btn{
+  font-size:.72rem;font-weight:800;color:var(--clr-ink-soft);
+  border:1px solid color-mix(in srgb, var(--clr-ink) 20%, transparent);
+  padding:3px 10px;border-radius:100px;margin-inline-start:6px;
+}
+.amount-box{text-align:center;background:var(--clr-teal-light);border-radius:12px;padding:12px;margin:16px 0;font-size:.92rem;color:var(--clr-teal);}
+</style>
 </head>
 <body>
-<div class="container">
-  <div class="brand">📖 <span>بطلي</span></div>
 
+<div class="page-header">
+  <a href="index.html" class="brand"><img src="images/logo-icon.png" alt="بطلي" style="height:32px;"></a>
+  <a href="#" id="backBtn" class="back-link">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+    رجوع
+  </a>
+</div>
+
+<div class="container">
   <div class="card" style="text-align:center;">
     <div style="font-size:2.4rem;">🎉</div>
     <h2 style="margin:10px 0 4px;">تم إنشاء طلبك بنجاح</h2>
     <p style="color:var(--clr-ink-soft);font-size:.92rem;">سيتم مراجعة طلبك بعد التحقق من التحويل البنكي.</p>
 
-    <div style="background:var(--clr-cream);border-radius:14px;padding:16px;margin:20px 0;">
-      <div style="font-size:.85rem;color:var(--clr-ink-soft);">رقم الطلب</div>
-      <div style="font-size:1.6rem;font-weight:900;color:var(--clr-primary);" id="orderNumberDisplay">—</div>
+    <div class="order-number-box" id="orderNumberBox">
+      <div style="font-size:.85rem;color:var(--clr-ink-soft);">رقم الطلب (اضغط للنسخ)</div>
+      <div class="num" id="orderNumberDisplay">—</div>
+      <div class="copy-hint" id="copyHint">الرجاء حفظ الرقم — ستحتاجه لتتبع طلبك</div>
     </div>
 
-    <div style="text-align:right;background:var(--clr-teal-light);border-radius:14px;padding:18px;margin-bottom:20px;">
-      <h4 style="color:var(--clr-teal);margin-bottom:12px;">بيانات التحويل البنكي</h4>
-      <div id="bankDetails" style="font-size:.9rem;line-height:2;"></div>
-      <div style="font-size:.85rem;color:var(--clr-ink-soft);margin-top:8px;">المبلغ المطلوب: <b id="amountDue">—</b></div>
+    <div style="text-align:right;">
+      <p class="transfer-note">الرجاء إيداع المبلغ في أحد حساباتنا البنكية التالية:</p>
+      <div id="banksList"></div>
+      <div class="amount-box">المبلغ المطلوب: <b id="amountDue">—</b></div>
     </div>
 
     <form id="receiptForm" style="text-align:right;">
@@ -38,21 +86,58 @@
   </div>
 </div>
 
+<div class="page-footer">
+  © 2026 منصة بطلي — <a href="index.html" style="text-decoration:underline;">العودة للصفحة الرئيسية</a>
+</div>
+
 <script src="shared/config.js"></script>
 <script src="shared/drive-upload.js"></script>
 <script>
+document.getElementById('backBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  if (document.referrer) window.history.back();
+  else window.location.href = 'index.html';
+});
+
 const params = new URLSearchParams(location.search);
 const orderNumber = params.get('order');
 document.getElementById('orderNumberDisplay').textContent = orderNumber || '—';
 document.getElementById('trackLink').href = `track.html?order=${orderNumber}`;
 
-document.getElementById('bankDetails').innerHTML = `
-  البنك: ${BANK_INFO.bankName}<br>
-  اسم الحساب: ${BANK_INFO.accountName}<br>
-  رقم الآيبان: ${BANK_INFO.iban}
-`;
+/* نسخ رقم الطلب بالضغط عليه */
+document.getElementById('orderNumberBox').addEventListener('click', () => {
+  navigator.clipboard.writeText(orderNumber).then(() => {
+    const hint = document.getElementById('copyHint');
+    hint.textContent = 'تم نسخ رقم الطلب ✅ — الرجاء حفظه';
+    hint.classList.add('copied');
+    setTimeout(() => { hint.textContent = 'الرجاء حفظ الرقم — ستحتاجه لتتبع طلبك'; hint.classList.remove('copied'); }, 2500);
+  });
+});
 
-// عرض المبلغ المطلوب من بيانات الطلب
+/* عرض حسابات التحويل البنكي */
+document.getElementById('banksList').innerHTML = BANKS.map(b => `
+  <div class="bank-card" style="--bank-color:${b.color};">
+    <div class="bank-logo">
+      <img src="${b.logo}" alt="${b.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span>${b.name.charAt(0)}</span>';">
+    </div>
+    <div class="bank-info">
+      <b>${b.name}</b><br>
+      اسم الحساب: ${b.accountName}<br>
+      رقم الحساب: ${b.accountNumber}
+      <button type="button" class="copy-account-btn" onclick="copyAccount('${b.accountNumber}', this)">نسخ الرقم</button>
+    </div>
+  </div>
+`).join('');
+
+function copyAccount(number, btn) {
+  navigator.clipboard.writeText(number).then(() => {
+    const original = btn.textContent;
+    btn.textContent = 'تم النسخ ✓';
+    setTimeout(() => { btn.textContent = original; }, 1800);
+  });
+}
+
+/* عرض المبلغ المطلوب من بيانات الطلب */
 (async () => {
   const { data } = await supabaseClient
     .from('order_public_status')
