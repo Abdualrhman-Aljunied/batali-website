@@ -3,21 +3,20 @@
 // ============================================================
 
 // من Supabase Dashboard → Project Settings → API
-const SUPABASE_URL = 'https://lnrmqzgzxnxwjkoqhhuu.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxucm1xemd6eG54d2prb3FoaHV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxOTg4NzIsImV4cCI6MjA5OTc3NDg3Mn0.iSFmreS-FdIZjoQaobv3ZodB-c16ZXKQ_QXVGdcZeqQ';
+const SUPABASE_URL = 'https://YOUR-PROJECT-REF.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';
 
 // رابط تطبيق ويب (Google Apps Script) بعد نشره — راجع دليل التركيب
-const DRIVE_UPLOAD_URL = 'https://script.google.com/macros/s/AKfycbzAD21lMHrvJ4UBubZDEEIyCCeES3-OsI9aBwBl6KrFlufnBKfRKUIaA_P88G9hUBPU/exec';
+const DRIVE_UPLOAD_URL = 'https://script.google.com/macros/s/YOUR-DEPLOYMENT-ID/exec';
 
 // رقم واتساب المنصة (بدون + وبدون مسافات)
 const WHATSAPP_PHONE = '966500000000';
 
-// بيانات الحساب البنكي المعروضة بعد إنشاء الطلب
-const BANK_INFO = {
-  bankName: 'اسم البنك',
-  accountName: 'اسم صاحب الحساب',
-  iban: 'SAxx xxxx xxxx xxxx xxxx xxxx',
-};
+// حسابات التحويل البنكي المعروضة بعد إنشاء الطلب (عدّل الاسم ورقم الحساب لكل واحد)
+const BANKS = [
+  { name: 'العمقي للصرافة', accountName: 'اسم صاحب الحساب', accountNumber: 'رقم الحساب هنا', color: '#2F6E68', logo: 'images/bank-amaqi.png' },
+  { name: 'البسيري للصرافة', accountName: 'اسم صاحب الحساب', accountNumber: 'رقم الحساب هنا', color: '#2A6FB0', logo: 'images/bank-bassiri.png' },
+];
 
 // ============================================================
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
