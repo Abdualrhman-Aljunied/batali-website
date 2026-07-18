@@ -489,6 +489,7 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
   *{animation:none !important;transition:none !important;}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body data-theme="light">
 
@@ -810,29 +811,24 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
   </div>
 </div>
 
+<script src="shared/config.js"></script>
 <script>
-const WHATSAPP_PHONE = '966500000000'; // TODO: استبدل الرقم برقم واتساب المنصة الفعلي
+let STORIES = [];
 
-const STORIES = [
-  {id:1, title:'بطل الصدق', tag:'الصدق', price:79, desc:'قصة تأخذ طفلك في مغامرة يتعلم فيها أن الصدق هو طريق الأبطال الحقيقيين، مهما كانت الحقيقة صعبة.', color1:'#D85A30', color2:'#B94826', icon:'shield', images:['images/1-1.jpg','images/1-2.jpg','images/1-3.jpg']},
-  {id:2, title:'الأمانة كنزي', tag:'الأمانة', price:79, desc:'يكتشف طفلك في هذه القصة أن أمانته كنز أثمن من أي شيء آخر، من خلال موقف يختبر أمانته.', color1:'#FAC775', color2:'#E8A94F', icon:'gem', images:['images/2-1.jpg','images/2-2.jpg','images/2-3.jpg']},
-  {id:3, title:'قلب يبرّ والديه', tag:'بر الوالدين', price:79, desc:'رحلة مشاعر دافئة يتعلم فيها طفلك قيمة طاعة واحترام والديه وكيف يسعدهما بأفعاله.', color1:'#2F6E68', color2:'#1F4E4A', icon:'heart', images:['images/3-1.jpg','images/3-2.jpg','images/3-3.jpg']},
-  {id:4, title:'شجاعة صغيرة', tag:'الشجاعة', price:89, desc:'قصة ملهمة تعلّم طفلك أن يواجه مخاوفه بثقة، وأن الشجاعة الحقيقية تبدأ بخطوة واحدة.', color1:'#D85A30', color2:'#F08048', icon:'star', images:['images/4-1.jpg','images/4-2.jpg','images/4-3.jpg']},
-  {id:5, title:'يدٌ تتعاون', tag:'التعاون', price:79, desc:'يتعرّف طفلك على قوة العمل الجماعي من خلال مغامرة ممتعة مع أصدقائه لحل مشكلة كبيرة.', color1:'#2F6E68', color2:'#3F8E86', icon:'hands', images:['images/5-1.jpg','images/5-2.jpg','images/5-3.jpg']},
-  {id:6, title:'أميرة الأدب', tag:'حسن الخلق', price:89, desc:'قصة تغرس في طفلك حسن التعامل مع من حوله، والكلمة الطيبة، والابتسامة الصادقة.', color1:'#FAC775', color2:'#D8944A', icon:'flower', images:['images/6-1.jpg','images/6-2.jpg','images/6-3.jpg']},
-];
-/* لإضافة صور منتجاتك الحقيقية: أنشئ مجلد "images" بجانب ملف الموقع،
-   وارفع فيه صوراً بنفس الأسماء أعلاه (مثال: images/1-1.jpg, images/1-2.jpg, images/1-3.jpg لقصة "بطل الصدق").
-   إذا لم توجد الصورة، يظهر تلقائياً تصميم الأيقونة الملوّن بدلاً منها. */
+const DEFAULT_ICON = `<path d="M50 10l32 12v24c0 26-14 40-32 44-18-4-32-18-32-44V22l32-12z" fill="#fff" fill-opacity=".92"/><path d="M40 50l7 7 15-16" stroke="var(--ic)" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+const DEFAULT_COLOR1 = '#D85A30';
+const DEFAULT_COLOR2 = '#B94826';
 
-const ICONS = {
-  shield:`<path d="M50 10l32 12v24c0 26-14 40-32 44-18-4-32-18-32-44V22l32-12z" fill="#fff" fill-opacity=".92"/><path d="M40 50l7 7 15-16" stroke="var(--ic)" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
-  gem:`<path d="M20 38l16-24h28l16 24-30 42-30-42z" fill="#fff" fill-opacity=".92"/><path d="M20 38h60M36 14l-9 24 23 42 23-42-9-24" stroke="var(--ic)" stroke-width="3" fill="none"/>`,
-  heart:`<path d="M50 82S15 60 15 36c0-13 10-20 20-20 8 0 13 5 15 10 2-5 7-10 15-10 10 0 20 7 20 20 0 24-35 46-35 46z" fill="#fff" fill-opacity=".92"/>`,
-  star:`<path d="M50 10l11.4 26.4L90 39l-21.4 19.4L74 88 50 72.4 26 88l5.4-29.6L10 39l28.6-2.6z" fill="#fff" fill-opacity=".92"/>`,
-  hands:`<circle cx="50" cy="50" r="40" fill="#fff" fill-opacity=".92"/><path d="M32 55c0-12 8-20 18-20s18 8 18 20-8 20-18 20-18-8-18-20z" fill="none" stroke="var(--ic)" stroke-width="4"/>`,
-  flower:`<circle cx="50" cy="34" r="12" fill="#fff" fill-opacity=".92"/><circle cx="50" cy="66" r="12" fill="#fff" fill-opacity=".92"/><circle cx="34" cy="50" r="12" fill="#fff" fill-opacity=".92"/><circle cx="66" cy="50" r="12" fill="#fff" fill-opacity=".92"/><circle cx="50" cy="50" r="12" fill="var(--clr-secondary)"/>`
-};
+async function loadProducts(){
+  const { data, error } = await supabaseClient
+    .from('products')
+    .select('*')
+    .eq('active', true)
+    .order('sort_order', { ascending: true });
+  if (error) { console.error(error); return; }
+  STORIES = data;
+  renderProducts();
+}
 
 let cart = [];
 
@@ -859,27 +855,27 @@ const grid = document.getElementById('productsGrid');
 function renderProducts(){
   grid.innerHTML = STORIES.map(s => `
     <div class="story-card" data-id="${s.id}">
-      <div class="story-cover" style="background:linear-gradient(145deg, ${s.color1}, ${s.color2}); --ic:${s.color2};">
-        <svg viewBox="0 0 100 100">${ICONS[s.icon]}</svg>
-        <img src="${s.images[0]}" alt="${s.title}" loading="lazy" onerror="this.style.display='none'">
+      <div class="story-cover" style="background:linear-gradient(145deg, ${DEFAULT_COLOR1}, ${DEFAULT_COLOR2}); --ic:${DEFAULT_COLOR2};">
+        <svg viewBox="0 0 100 100">${DEFAULT_ICON}</svg>
+        ${s.image_url ? `<img src="${s.image_url}" alt="${s.title}" loading="lazy" onerror="this.style.display='none'">` : ''}
       </div>
       <div class="story-body">
-        <span class="story-tag">${s.tag}</span>
+        <span class="story-tag">${s.tag || ''}</span>
         <h3>${s.title}</h3>
-        <p>${s.desc}</p>
+        <p>${s.description || ''}</p>
         <div class="story-foot">
           <span class="story-price">${s.price} ريال</span>
           <span class="story-btn">عرض التفاصيل</span>
         </div>
       </div>
     </div>
-  `).join('');
+  `).join('') || `<p style="color:var(--clr-ink-soft);grid-column:1/-1;text-align:center;">لا توجد قصص متاحة حالياً.</p>`;
   grid.querySelectorAll('.story-card').forEach(card=>{
-    card.addEventListener('click', ()=> openProduct(Number(card.dataset.id)));
+    card.addEventListener('click', ()=> openProduct(card.dataset.id));
   });
   revealObserver();
 }
-renderProducts();
+loadProducts();
 
 /* PRODUCT MODAL / GALLERY */
 const productOverlay = document.getElementById('productOverlay');
@@ -896,12 +892,11 @@ function openProduct(id){
     </button>
     <div class="modal-gallery">
       <div class="gallery-main" id="galleryMain"></div>
-      <div class="gallery-thumbs" id="galleryThumbs"></div>
     </div>
     <div class="modal-content">
-      <span class="story-tag">${currentStory.tag}</span>
+      <span class="story-tag">${currentStory.tag || ''}</span>
       <h2>${currentStory.title}</h2>
-      <p class="desc">${currentStory.desc}</p>
+      <p class="desc">${currentStory.description || ''}</p>
       <div class="req-box">
         <h4>قبل الطلب</h4>
         <ul>
@@ -912,7 +907,7 @@ function openProduct(id){
       </div>
       <div class="modal-footer">
         <span class="modal-price">${currentStory.price} ريال</span>
-        <button class="btn-primary" onclick="addToCart(${currentStory.id})">أضف إلى السلة</button>
+        <button class="btn-primary" onclick="addToCart('${currentStory.id}')">أضف إلى السلة</button>
       </div>
     </div>
   `;
@@ -923,36 +918,12 @@ function openProduct(id){
 function renderGallery(){
   const s = currentStory;
   const main = document.getElementById('galleryMain');
-  main.style.background = `linear-gradient(145deg, ${s.color1}, ${s.color2})`;
-  main.style.setProperty('--ic', s.color2);
+  main.style.background = `linear-gradient(145deg, ${DEFAULT_COLOR1}, ${DEFAULT_COLOR2})`;
+  main.style.setProperty('--ic', DEFAULT_COLOR2);
   main.innerHTML = `
-    <svg viewBox="0 0 100 100">${ICONS[s.icon]}</svg>
-    <img src="${s.images[currentGalleryIndex]}" alt="${s.title}" onerror="this.style.display='none'">
-    ${s.images.length > 1 ? `
-      <button class="gallery-nav prev" onclick="galleryStep(1)" aria-label="الصورة السابقة">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-      <button class="gallery-nav next" onclick="galleryStep(-1)" aria-label="الصورة التالية">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
-      </button>
-    ` : ''}
+    <svg viewBox="0 0 100 100">${DEFAULT_ICON}</svg>
+    ${s.image_url ? `<img src="${s.image_url}" alt="${s.title}" onerror="this.style.display='none'">` : ''}
   `;
-  const thumbs = document.getElementById('galleryThumbs');
-  thumbs.innerHTML = s.images.map((img,i)=>`
-    <div class="gallery-thumb ${i===currentGalleryIndex?'active':''}" onclick="setGalleryIndex(${i})" style="background:linear-gradient(145deg, ${s.color1}, ${s.color2}); --ic:${s.color2};">
-      <svg viewBox="0 0 100 100">${ICONS[s.icon]}</svg>
-      <img src="${img}" alt="" onerror="this.style.display='none'">
-    </div>
-  `).join('');
-}
-function galleryStep(dir){
-  const len = currentStory.images.length;
-  currentGalleryIndex = (currentGalleryIndex + dir + len) % len;
-  renderGallery();
-}
-function setGalleryIndex(i){
-  currentGalleryIndex = i;
-  renderGallery();
 }
 
 /* CART */
