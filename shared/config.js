@@ -14,7 +14,7 @@ const WHATSAPP_PHONE = '966500000000';
 
 // حسابات التحويل البنكي المعروضة بعد إنشاء الطلب (عدّل الاسم ورقم الحساب لكل واحد)
 const BANKS = [
-  { name: 'العمقي للصرافة', accountName: 'اسم صاحب الحساب', accountNumber: 'رقم الحساب هنا', color: '#2F6E68', logo: 'images/bank-amaqi.png' },
+  { name: 'العمقي للصرافة', accountName: 'اسم صاحب الحساب', accountNumber: 'رقم الحساب هنا', color: '#2F6E68', logo: 'images/amaqi.png' },
   { name: 'البسيري للصرافة', accountName: 'اسم صاحب الحساب', accountNumber: 'رقم الحساب هنا', color: '#2A6FB0', logo: 'images/bank-bassiri.png' },
 ];
 
