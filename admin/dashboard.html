@@ -202,7 +202,7 @@ function openDetail(id) {
   document.getElementById('detailModal').innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <h3>تفاصيل الطلب ${o.order_number} ${o.is_new ? '<span class="new-badge">جديد</span>' : ''}</h3>
-      <button class="btn btn-outline" style="padding:6px 14px;font-size:.78rem;" onclick="copyOrderDetails('${o.id}')">نسخ التفاصيل</button>
+      <button class="btn btn-outline" style="padding:6px 14px;font-size:.78rem;" onclick="copyOrderDetails('${o.id}')">نسخ بيانات الطفل</button>
     </div>
     <div id="detailFields">
       <div class="detail-row"><b>ولي الأمر</b><span>${o.parent_name}</span></div>
@@ -235,23 +235,16 @@ function openDetail(id) {
 
 function copyOrderDetails(id) {
   const o = allOrders.find(x => x.id === id);
-  const text = `طلب ${o.order_number}
-ولي الأمر: ${o.parent_name}
-الجوال: ${o.phone}
-البريد: ${o.email || '—'}
-المدينة: ${o.city}
+  const text = `بيانات الطفل — طلب ${o.order_number}
 اسم الطفل: ${o.child_name}
 عمر الطفل: ${o.child_age || '—'}
 جنس الطفل: ${o.child_gender || '—'}
 معلومة عن الطفل: ${o.child_note || '—'}
-المنتج: ${o.product_title} (${o.product_price} ريال)
 القيمة المطلوبة: ${o.story_value || '—'}
 الإهداء: ${o.dedication_text || '—'}
-هواية/تفصيلة: ${o.hobby_detail || '—'}
-الصور: ${(o.photo_urls||[]).join(' | ') || '—'}
-سند التحويل: ${o.receipt_url || '—'}
-الحالة: ${STATUS_LABELS[o.status]}`;
-  navigator.clipboard.writeText(text).then(() => alert('تم نسخ تفاصيل الطلب ✅'));
+هواية/تفصيلة للقصة: ${o.hobby_detail || '—'}
+الصور: ${(o.photo_urls||[]).join(' | ') || '—'}`;
+  navigator.clipboard.writeText(text).then(() => alert('تم نسخ بيانات الطفل ✅'));
 }
 
 function closeDetail() { document.getElementById('detailOverlay').classList.remove('open'); }
@@ -259,8 +252,18 @@ function closeDetail() { document.getElementById('detailOverlay').classList.remo
 async function updateStatus(id) {
   const newStatus = document.getElementById('statusSelect').value;
   const { error } = await supabaseClient.from('orders').update({ status: newStatus, is_new: false }).eq('id', id);
-  const msgEl = document.getElementById('detailMsg');
-  msgEl.innerHTML = error ? `<div class="error-box">فشل التحديث: ${error.message}</div>` : `<div class="success-box">تم تحديث الحالة بنجاح</div>`;
+  if (error) {
+    document.getElementById('detailMsg').innerHTML = `<div class="error-box">فشل التحديث: ${error.message}</div>`;
+    return;
+  }
+
+  // تحديث فوري محلي (بدون انتظار التحديث اللحظي من الخادم)
+  const localOrder = allOrders.find(x => x.id === id);
+  if (localOrder) { localOrder.status = newStatus; localOrder.is_new = false; }
+  renderStats();
+  renderTable();
+  openDetail(id); // إعادة رسم نافذة التفاصيل نفسها حتى تختفي شارة "جديد" منها أيضاً
+  document.getElementById('detailMsg').innerHTML = `<div class="success-box">تم تحديث الحالة بنجاح</div>`;
 }
 
 document.getElementById('detailOverlay').addEventListener('click', (e) => { if (e.target.id === 'detailOverlay') closeDetail(); });
@@ -302,6 +305,9 @@ function openProductForm(p) {
     <input type="number" id="pPrice" value="${isEdit ? p.price : 0}">
     <label>الوصف</label>
     <textarea id="pDesc">${isEdit ? (p.description||'') : ''}</textarea>
+    <label>رقم واتساب خاص بهذا المنتج (اختياري)</label>
+    <input type="text" id="pWhatsapp" value="${isEdit ? (p.whatsapp_number||'') : ''}" placeholder="مثال: 966500000000">
+    <p class="hint">إن تُرك فارغاً، يُستخدم رقم واتساب المنصة العام من ملف الإعدادات.</p>
     <label>صورة المنتج</label>
     <input type="file" id="pImage" accept="image/*">
     ${isEdit && p.image_url ? `<p class="hint">الصورة الحالية موجودة — ارفع صورة جديدة فقط إذا أردت استبدالها.</p>` : ''}
@@ -329,6 +335,7 @@ async function saveProduct(id) {
       tag: document.getElementById('pTag').value.trim(),
       price: parseFloat(document.getElementById('pPrice').value) || 0,
       description: document.getElementById('pDesc').value.trim(),
+      whatsapp_number: document.getElementById('pWhatsapp').value.trim() || null,
       active: document.getElementById('pActive').checked,
     };
     if (imageUrl) payload.image_url = imageUrl;
@@ -386,7 +393,10 @@ function renderCharts() {
   const palette = ['#D85A30','#FAC775','#2F6E68','#B94826','#8A6A57','#3F8E86','#E8813F','#1F4E4A'];
 
   drawChart('chartGender', 'doughnut', countBy(filtered, o => o.child_gender), palette);
-  drawChart('chartAge', 'bar', countBy(filtered, o => o.child_age ? o.child_age + ' سنوات' : null), palette, true);
+  const ageCounts = {};
+  for (let a = 2; a <= 13; a++) ageCounts[a + ' سنوات'] = 0;
+  filtered.forEach(o => { const key = o.child_age + ' سنوات'; if (key in ageCounts) ageCounts[key]++; });
+  drawChart('chartAge', 'bar', ageCounts, palette, false);
 
   const cityCounts = countBy(filtered, o => o.city);
   drawChart('chartCity', 'bar', topN(cityCounts, 8), palette, true);
