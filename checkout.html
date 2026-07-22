@@ -66,7 +66,18 @@
 
 .consent-row{display:flex;align-items:flex-start;gap:10px;margin-top:20px;background:var(--clr-cream);padding:14px;border-radius:12px;}
 .consent-row input{width:auto;margin-top:3px;accent-color:var(--clr-primary);}
-.consent-row label{margin:0;font-weight:500;font-size:.85rem;line-height:1.8;}
+.consent-row label{margin:0;font-weight:500;font-size:.85rem;line-height:1.8;}html,body{overflow-x:hidden;max-width:100%;}
+input,select,textarea{max-width:100%;}
+
+@media(max-width:640px){
+  .container{padding:14px;}
+  .card{padding:18px;}
+  .photo-guide{flex-direction:column;align-items:center;text-align:center;}
+  .photo-guide img{width:120px;height:120px;}
+  .photo-guide .tips-cols{flex-direction:column;gap:6px;width:100%;text-align:right;}
+  .products-grid{grid-template-columns:1fr;}
+  .picker-panel{grid-template-columns:repeat(3,1fr);}
+}
 </style>
 </head>
 <body>
@@ -96,8 +107,8 @@
       </div>
       <div id="phoneError" class="error-box" style="display:none;">الرجاء إدخال أرقام فقط، أعد إدخال الرقم بطريقة صحيحة.</div>
 
-      <label class="required">البريد الإلكتروني</label>
-      <input type="email" id="email" required>
+      <label>البريد الإلكتروني (اختياري)</label>
+      <input type="email" id="email">
 
       <label class="required">المدينة</label>
       <input type="text" id="city" required>
@@ -314,6 +325,9 @@ form.addEventListener('submit', async (e) => {
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
 
+  let createdOrder = null; // لتفادي إنشاء طلب مكرر إذا فشلت خطوة رفع الصور فقط
+  let step = 'create_order';
+
   try {
     const fullPhone = phoneInput.value;
     const dedicationText = dedicationType.value === 'named'
@@ -342,25 +356,58 @@ form.addEventListener('submit', async (e) => {
     });
 
     if (insertError) throw insertError;
-    const order = orderRows[0];
+    createdOrder = orderRows[0];
 
+    step = 'upload_photos';
     submitBtn.innerHTML = '<span class="spinner"></span> جاري رفع الصور...';
     const photoFiles = document.getElementById('childPhotos').files;
-    const photoUrls = photoFiles.length ? await uploadMultipleToDrive(photoFiles, order.order_number) : [];
+    const photoUrls = photoFiles.length ? await uploadMultipleToDrive(photoFiles, createdOrder.order_number) : [];
 
+    step = 'save_files';
     const { error: updateError } = await supabaseClient.rpc('add_order_files', {
-      p_order_id: order.id,
+      p_order_id: createdOrder.id,
       p_photo_urls: photoUrls,
       p_voice_url: null,
     });
     if (updateError) throw updateError;
 
-    window.location.href = `order-success.html?order=${order.order_number}`;
+    window.location.href = `order-success.html?order=${createdOrder.order_number}&amount=${cartItem.price}`;
 
   } catch (err) {
-    msgEl.innerHTML = `<div class="error-box">حدث خطأ: ${err.message}. حاول مرة أخرى.</div>`;
+    let friendly = '';
+    if (step === 'create_order') {
+      friendly = `تعذّر إنشاء الطلب في قاعدة البيانات. (${err.message || 'Failed to fetch'})`;
+    } else if (step === 'upload_photos') {
+      friendly = `تم إنشاء طلبك برقم <b>${createdOrder.order_number}</b> بنجاح، لكن تعذّر رفع الصور إلى Google Drive. (${err.message || 'Failed to fetch'})
+      <br>هذا غالباً بسبب رابط Apps Script غير صحيح أو غير منشور بصلاحية "Anyone". احفظ رقم الطلب وأرسل الصور لاحقاً، أو أعد المحاولة.`;
+    } else {
+      friendly = `تم إنشاء طلبك ورفع الصور، لكن تعذّر حفظ روابطها بالطلب. (${err.message || 'Failed to fetch'})
+      <br>رقم طلبك: <b>${createdOrder.order_number}</b> — تواصل معنا بهذا الرقم.`;
+    }
+    msgEl.innerHTML = `<div class="error-box">${friendly}</div>`;
     submitBtn.disabled = false;
-    submitBtn.textContent = 'إرسال الطلب';
+    submitBtn.textContent = createdOrder ? 'إعادة محاولة رفع الصور' : 'إرسال الطلب';
+
+    // إذا كان الطلب أُنشئ بالفعل، أعد المحاولة من رفع الصور فقط (لا تكرار للطلب)
+    if (createdOrder) {
+      form.onsubmit = async (e2) => {
+        e2.preventDefault();
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner"></span> جاري رفع الصور...';
+        try {
+          const photoFiles = document.getElementById('childPhotos').files;
+          const photoUrls = photoFiles.length ? await uploadMultipleToDrive(photoFiles, createdOrder.order_number) : [];
+          const { error: updateError } = await supabaseClient.rpc('add_order_files', {
+            p_order_id: createdOrder.id, p_photo_urls: photoUrls, p_voice_url: null,
+          });
+          if (updateError) throw updateError;
+          window.location.href = `order-success.html?order=${createdOrder.order_number}&amount=${cartItem.price}`;
+        } catch (err2) {
+          msgEl.innerHTML = `<div class="error-box">لا زال الرفع يفشل: ${err2.message}. رقم طلبك المحفوظ: <b>${createdOrder.order_number}</b></div>`;
+          submitBtn.disabled = false;
+        }
+      };
+    }
   }
 });
 </script>
