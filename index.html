@@ -92,6 +92,21 @@ nav a:hover::after{width:100%;}
 [data-theme="dark"] .icon-sun{display:none;}
 [data-theme="dark"] .icon-moon{display:block;}
 .mobile-toggle{display:none;}
+#hamburgerBtn{display:none;}
+.mobile-nav-overlay{
+  position:fixed;inset:0;background:rgba(20,12,8,.55);z-index:90;
+  opacity:0;pointer-events:none;transition:opacity var(--transition);
+}
+.mobile-nav-overlay.open{opacity:1;pointer-events:auto;}
+.mobile-nav{
+  position:absolute;top:0;right:0;height:100%;width:78%;max-width:320px;
+  background:var(--clr-paper);padding:90px 28px 28px;display:flex;flex-direction:column;gap:22px;
+  transform:translateX(100%);transition:transform var(--transition);
+  font-weight:700;font-size:1.05rem;
+}
+.mobile-nav-overlay.open .mobile-nav{transform:translateX(0);}
+.mobile-nav a{color:var(--clr-ink);}
+.mobile-nav a:hover{color:var(--clr-primary);}
 
 /* ---------- HERO ---------- */
 .hero{position:relative;padding:70px 0 100px;overflow:hidden;}
@@ -461,29 +476,40 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
 }
 @media(max-width:900px){
   nav{display:none;}
+  #hamburgerBtn{display:flex;}
+  .hero{padding:28px 0 50px;}
   .hero-grid{
     grid-template-columns:1fr;
     grid-template-areas:
       "eyebrow"
       "heading"
-      "para"
       "visual"
+      "para"
       "demo"
       "cta";
-    row-gap:28px;
+    row-gap:14px;
   }
-  .hero-visual{order:initial;margin:6px 0;}
-  .hero-heading{margin-bottom:0;}
-  .hero-para{margin-bottom:0;}
-  .steps-grid,.products-grid{grid-template-columns:1fr;}
-  .book-cover{width:240px;height:320px;}
-  .cover-sun{width:190px;height:190px;}
-  .cover-name{font-size:1.5rem;}
-  .cover-subtitle{font-size:.86rem;}
-  .cover-child{width:150px;}
-  .cover-child-photo{width:210px;height:270px;}
-  .photo-hint{bottom:128px;font-size:.54rem;padding:4px 8px;}
-  .cover-badge{width:58px;height:58px;font-size:.58rem;}
+  .hero-visual{order:initial;margin:2px 0;}
+  .hero-heading{margin:8px 0 4px;font-size:1.7rem;}
+  .hero-para{margin-bottom:0;font-size:.92rem;}
+  .products-grid{grid-template-columns:1fr;}
+  .steps{padding:50px 0;}
+  .steps-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
+  .step-card{padding:18px 14px;}
+  .step-num{width:40px;height:40px;font-size:1rem;margin-bottom:10px;}
+  .step-card h3{font-size:.95rem;margin-bottom:6px;}
+  .step-card p{font-size:.8rem;line-height:1.6;}
+  .book-cover{width:220px;height:295px;}
+  .cover-sun{width:175px;height:175px;}
+  .cover-name{font-size:1.4rem;}
+  .cover-subtitle{font-size:.8rem;}
+  .cover-child{width:140px;}
+  .cover-child-photo{width:195px;height:250px;}
+  .photo-hint{bottom:120px;font-size:.54rem;padding:4px 8px;}
+  .cover-badge{width:54px;height:54px;font-size:.56rem;}
+}
+@media(max-width:480px){
+  .steps-grid{grid-template-columns:1fr;}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation:none !important;transition:none !important;}
@@ -498,10 +524,10 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
     <a href="#" class="logo">
       <img src="images/logo-icon.png" alt="بطلي" style="height:42px;width:auto;object-fit:contain;">
     </a>
-    <nav>
+    <nav id="mainNav">
       <a href="#steps">كيف نعمل؟</a>
       <a href="#products">القصص</a>
-      <a href="#privacy">الخصوصية</a>
+      <a href="#" id="privacyLink">سياسة الخصوصية</a>
       <a href="https://wa.me/966500000000" target="_blank" rel="noopener">واتساب</a>
     </nav>
     <div class="header-actions">
@@ -513,9 +539,22 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
         <span class="cart-badge" id="cartBadge">0</span>
       </button>
+      <button class="icon-btn" id="hamburgerBtn" aria-label="القائمة">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
     </div>
   </div>
 </header>
+
+<!-- قائمة الجوال المنبثقة -->
+<div class="mobile-nav-overlay" id="mobileNavOverlay">
+  <nav class="mobile-nav">
+    <a href="#steps">كيف نعمل؟</a>
+    <a href="#products">القصص</a>
+    <a href="#" id="privacyLinkMobile">سياسة الخصوصية</a>
+    <a href="https://wa.me/966500000000" target="_blank" rel="noopener">واتساب</a>
+  </nav>
+</div>
 
 <section class="hero">
   <div class="hero-bg"></div>
@@ -560,6 +599,7 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
         <!-- صورة الطفل الحقيقية (بخلفية شفافة). ضعها هنا باسم images/child-photo.png
              وستظهر تلقائياً فوق الرسمة التوضيحية لإثبات أن القالب حقيقي -->
         <img class="cover-child-photo" id="childPhoto" src="images/child-photo.png" alt="صورة الطفل"
+             decoding="async" fetchpriority="high"
              onload="this.style.display='block'; document.getElementById('childIllustration').style.display='none'; document.getElementById('photoHint').style.display='none';"
              onerror="this.style.display='none';">
 
@@ -704,6 +744,7 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
       </div>
       <h2>خصوصية طفلك أولويتنا</h2>
       <p>في بطلي، ندرك أن صور الأطفال وبياناتهم من أكثر المعلومات خصوصية. لذلك نستخدم الصور فقط لإنشاء المنتج الذي طلبته، ولا نشاركها أو نبيعها أو نعرضها لأي طرف أو عميل آخر. نتعامل مع جميع الملفات بسرية تامة، ونتبع إجراءات تهدف إلى حماية بياناتك طوال عملية التنفيذ.</p>
+      <a href="#" class="btn-ghost privacy-trigger" style="display:inline-block;margin-top:16px;">اقرأ السياسة كاملة</a>
     </div>
     <div class="privacy-grid">
       <div class="privacy-card">
@@ -756,14 +797,14 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
         <ul>
           <li><a href="#steps">كيف نعمل؟</a></li>
           <li><a href="#products">القصص</a></li>
-          <li><a href="#privacy">الخصوصية</a></li>
+          <li><a href="#" class="privacy-trigger">سياسة الخصوصية</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4>الشركة</h4>
         <ul>
           <li><a href="https://wa.me/966500000000" target="_blank" rel="noopener">واتساب</a></li>
-          <li><a href="#privacy">سياسة الخصوصية</a></li>
+          <li><a href="#" class="privacy-trigger">سياسة الخصوصية</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -777,7 +818,7 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
     <div class="footer-bottom">
       <small>© 2026 منصة بطلي. جميع الحقوق محفوظة.</small>
       <div class="footer-bottom-links">
-        <a href="#privacy">سياسة الخصوصية</a>
+        <a href="#" class="privacy-trigger">سياسة الخصوصية</a>
       </div>
     </div>
   </div>
@@ -787,6 +828,52 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
 <a href="#" id="whatsappFloat" class="whatsapp-float" aria-label="تواصل معنا عبر واتساب">
   <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.7-.8-1.9-.9-.3-.1-.4-.1-.6.1s-.7.9-.9 1-.3.2-.6.1a7.3 7.3 0 01-2.1-1.3 8 8 0 01-1.5-1.9c-.2-.3 0-.4.1-.6l.4-.5c.1-.2.2-.3.2-.5s0-.4-.1-.5l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3a10.7 10.7 0 004.6 4c.6.3 1.1.4 1.5.6.6.2 1.2.1 1.6.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.2-.3-.2-.6-.4z"/><path d="M12 2a10 10 0 00-8.5 15.2L2 22l4.9-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1112 20z"/></svg>
 </a>
+
+<!-- Privacy Policy Modal -->
+<div class="overlay" id="privacyOverlay">
+  <div class="modal" id="privacyModal" style="position:relative;max-width:680px;">
+    <button class="modal-close" id="privacyClose">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <div style="padding:32px 30px;line-height:2;font-size:.92rem;color:var(--clr-ink);">
+      <h2 style="font-size:1.4rem;font-weight:900;margin-bottom:6px;color:var(--clr-primary);">سياسة الخصوصية وسياسة الإرجاع</h2>
+      <p style="color:var(--clr-ink-soft);font-size:.8rem;margin-bottom:18px;">آخر تحديث: يُحدّث عند النشر</p>
+      <p>مرحبًا بكم في <b>بطلي</b>. نحن نؤمن بأن خصوصية أطفالكم وبياناتكم مسؤولية كبيرة قبل أن تكون التزامًا، ولذلك نحرص على التعامل مع جميع المعلومات والصور التي تزودوننا بها بأعلى درجات العناية والسرية. ويُعد استخدامكم لخدمات بطلي موافقة على هذه السياسة.</p>
+
+      <h3 style="color:var(--clr-teal);margin:22px 0 8px;">أولًا: المعلومات التي نجمعها</h3>
+      <p>لإتمام طلبكم قد نطلب: اسم ولي الأمر، رقم الواتساب، البريد الإلكتروني (اختياري)، اسم الطفل وعمره وجنسه وصورته، وأي معلومات إضافية لتخصيص المنتج.</p>
+
+      <h3 style="color:var(--clr-teal);margin:22px 0 8px;">ثانيًا: استخدام المعلومات</h3>
+      <p>تُستخدم البيانات فقط لتصميم وتنفيذ المنتج، التواصل بخصوص الطلب، وتحسين خدماتنا. لا نبيع أو نؤجّر أو نستغل بيانات العملاء أو صور الأطفال لأي أغراض تسويقية أو تجارية.</p>
+
+      <h3 style="color:var(--clr-teal);margin:22px 0 8px;">ثالثًا: حماية صور الأطفال</h3>
+      <p>يقتصر الوصول على فريق بطلي المسؤول عن التنفيذ فقط. تُستخدم الصور حصراً لإنتاج الطلب، ويتم حذفها من أنظمة العمل خلال مدة لا تتجاوز 30 يومًا من اكتمال الطلب، ما لم يُطلب خلاف ذلك.</p>
+
+      <h3 style="color:var(--clr-teal);margin:22px 0 8px;">رابعًا: استخدام تقنيات الذكاء الاصطناعي</h3>
+      <p>قد نستخدم أدوات ذكاء اصطناعي للمساعدة في إنتاج الرسومات. الصورة النهائية رسم فني مستوحى من ملامح الطفل وليست نسخة فوتوغرافية مطابقة، وقد تظهر اختلافات بسيطة مع الحفاظ على الهوية العامة للشخصية.</p>
+
+      <h3 style="color:var(--clr-teal);margin:22px 0 8px;">خامسًا: تنفيذ الطلب</h3>
+      <p>يبدأ التنفيذ بعد التحقق من الدفع ومراجعة البيانات، ومدته التقريبية أسبوعان، وقد تختلف بحسب ضغط الطلبات أو ظروف الشحن.</p>
+
+      <h3 style="color:var(--clr-teal);margin:22px 0 8px;">سادسًا: سياسة الإرجاع والاستبدال</h3>
+      <p>بما أن كل منتج يُصنع خصيصًا لطفل معيّن، لا يمكن الإلغاء أو الاسترداد أو الاستبدال بعد بدء التنفيذ، إلا في حال وجود خطأ من بطلي (كخطأ بالاسم أو الصورة) فنلتزم بإعادة الإنتاج مجاناً. أما الأخطاء الناتجة عن بيانات العميل فمسؤوليته، ولا تشمل إعادة الطباعة أو الاسترداد.</p>
+
+      <h3 style="color:var(--clr-teal);margin:22px 0 8px;">سابعًا: الدفع</h3>
+      <p>تُقبل المدفوعات حالياً عبر الإيداع في حساباتنا لدى بنك العمقي وبنك البسيري، ولا يبدأ التنفيذ قبل تأكيد الدفع.</p>
+
+      <h3 style="color:var(--clr-teal);margin:22px 0 8px;">ثامنًا: الشحن</h3>
+      <p>نشحن إلى جميع محافظات الجمهورية اليمنية، ونتابع الشحنة قدر الإمكان، إلا أن أي تأخير من شركة الشحن أو لأسباب خارجة عن إرادتنا لا يُعد مسؤولية مباشرة على بطلي.</p>
+
+      <h3 style="color:var(--clr-teal);margin:22px 0 8px;">تاسعًا: الملكية الفكرية</h3>
+      <p>جميع القصص والتصاميم والرسومات والمجلة والشعار والهوية البصرية ملكية فكرية حصرية لبطلي، ولا يجوز استخدامها أو نسخها دون موافقة خطية مسبقة.</p>
+
+      <h3 style="color:var(--clr-teal);margin:22px 0 8px;">عاشرًا: تعديل السياسة</h3>
+      <p>يحتفظ بطلي بحقه في تحديث هذه السياسة عند الحاجة، ويُعمل بالإصدار المنشور على الموقع من تاريخ نشره.</p>
+
+      <p style="margin-top:20px;font-weight:700;background:var(--clr-teal-light);padding:14px;border-radius:12px;color:var(--clr-teal);">باستخدامك لخدمات بطلي وإتمام عملية الطلب، فإنك تقر بأنك اطلعت على هذه السياسة وفهمتها ووافقت على جميع ما ورد فيها.</p>
+    </div>
+  </div>
+</div>
 
 <!-- Product Modal -->
 <div class="overlay" id="productOverlay">
@@ -857,7 +944,7 @@ function renderProducts(){
     <div class="story-card" data-id="${s.id}">
       <div class="story-cover" style="background:linear-gradient(145deg, ${DEFAULT_COLOR1}, ${DEFAULT_COLOR2}); --ic:${DEFAULT_COLOR2};">
         <svg viewBox="0 0 100 100">${DEFAULT_ICON}</svg>
-        ${s.image_url ? `<img src="${s.image_url}" alt="${s.title}" loading="lazy" onerror="this.style.display='none'">` : ''}
+        ${s.image_url ? `<img src="${s.image_url}" alt="${s.title}" loading="lazy" decoding="async" onerror="this.style.display='none'">` : ''}
       </div>
       <div class="story-body">
         <span class="story-tag">${s.tag || ''}</span>
@@ -922,7 +1009,7 @@ function renderGallery(){
   main.style.setProperty('--ic', DEFAULT_COLOR2);
   main.innerHTML = `
     <svg viewBox="0 0 100 100">${DEFAULT_ICON}</svg>
-    ${s.image_url ? `<img src="${s.image_url}" alt="${s.title}" onerror="this.style.display='none'">` : ''}
+    ${s.image_url ? `<img src="${s.image_url}" alt="${s.title}" loading="lazy" decoding="async" onerror="this.style.display='none'">` : ''}
   `;
 }
 
@@ -990,14 +1077,30 @@ document.getElementById('whatsappFloat').addEventListener('click', (e)=>{
   window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
 });
 
+/* PRIVACY MODAL */
+const privacyOverlay = document.getElementById('privacyOverlay');
+function openPrivacy(e){ e.preventDefault(); openOverlay(privacyOverlay); }
+document.getElementById('privacyLink').addEventListener('click', openPrivacy);
+document.getElementById('privacyLinkMobile').addEventListener('click', (e)=>{ closeMobileNav(); openPrivacy(e); });
+document.getElementById('privacyClose').addEventListener('click', ()=> closeOverlay(privacyOverlay));
+document.querySelectorAll('.privacy-trigger').forEach(el => el.addEventListener('click', openPrivacy));
+
+/* MOBILE HAMBURGER MENU */
+const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+function openMobileNav(){ mobileNavOverlay.classList.add('open'); document.body.style.overflow='hidden'; }
+function closeMobileNav(){ mobileNavOverlay.classList.remove('open'); document.body.style.overflow=''; }
+document.getElementById('hamburgerBtn').addEventListener('click', openMobileNav);
+mobileNavOverlay.addEventListener('click', (e)=>{ if(e.target===mobileNavOverlay) closeMobileNav(); });
+document.querySelectorAll('.mobile-nav a:not(#privacyLinkMobile)').forEach(a=> a.addEventListener('click', closeMobileNav));
+
 /* OVERLAY HELPERS */
 function openOverlay(el){ el.classList.add('open'); document.body.style.overflow='hidden'; }
 function closeOverlay(el){ el.classList.remove('open'); document.body.style.overflow=''; }
-[productOverlay, cartOverlay].forEach(ov=>{
+[productOverlay, cartOverlay, privacyOverlay].forEach(ov=>{
   ov.addEventListener('click', e=>{ if(e.target===ov) closeOverlay(ov); });
 });
 document.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){ closeOverlay(productOverlay); closeOverlay(cartOverlay); }
+  if(e.key==='Escape'){ closeOverlay(productOverlay); closeOverlay(cartOverlay); closeOverlay(privacyOverlay); closeMobileNav(); }
 });
 
 /* SCROLL REVEAL */
