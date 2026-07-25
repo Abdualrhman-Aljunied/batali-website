@@ -401,9 +401,9 @@ function renderReviewStep(){
       <div id="couponMsg" style="font-size:.8rem;margin-top:6px;"></div>
     </div>
 
-    <div class="price-row"><span>السعر الأساسي</span><span id="priceSubtotal">${subtotal} ريال</span></div>
-    <div class="price-row" id="discountRow" style="display:none;color:var(--clr-teal);"><span>الخصم</span><span id="priceDiscount">0 ريال</span></div>
-    <div class="price-row total"><span>الإجمالي</span><span id="priceTotal">${subtotal} ريال</span></div>
+    <div class="price-row"><span>السعر الأساسي</span><span id="priceSubtotal">${subtotal} ر.س</span></div>
+    <div class="price-row" id="discountRow" style="display:none;color:var(--clr-teal);"><span>الخصم</span><span id="priceDiscount">0 ر.س</span></div>
+    <div class="price-row total"><span>الإجمالي</span><span id="priceTotal">${subtotal} ر.س</span></div>
 
     <div class="consent-row">
       <input type="checkbox" id="consentPrivacy">
@@ -437,8 +437,8 @@ function renderReviewStep(){
       msgEl.style.color = 'var(--clr-teal)'; msgEl.textContent = result.message;
     }
     document.getElementById('discountRow').style.display = currentDiscount>0 ? 'flex':'none';
-    document.getElementById('priceDiscount').textContent = '−'+currentDiscount+' ريال';
-    document.getElementById('priceTotal').textContent = (subtotal-currentDiscount)+' ريال';
+    document.getElementById('priceDiscount').textContent = '−'+currentDiscount+' ر.س';
+    document.getElementById('priceTotal').textContent = (subtotal-currentDiscount)+' ر.س';
   }
   document.getElementById('applyCouponBtn').addEventListener('click', applyCoupon);
   if (couponCode) applyCoupon();
