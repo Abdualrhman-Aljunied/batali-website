@@ -953,7 +953,10 @@ let currentGalleryIndex = 0;
 function formatAsBullets(text){
   const lines = (text || '').split('\n').map(l => l.trim()).filter(Boolean);
   if (lines.length === 0) return '';
-  return `<ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+  const [firstLine, ...restLines] = lines;
+  const firstHtml = `<p>${firstLine}</p>`;
+  const restHtml = restLines.length ? `<ul>${restLines.map(l => `<li>${l}</li>`).join('')}</ul>` : '';
+  return firstHtml + restHtml;
 }
 
 function openProduct(id){
