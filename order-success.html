@@ -104,7 +104,7 @@ const orderNumber = params.get('order');
 const amount = params.get('amount');
 document.getElementById('orderNumberDisplay').textContent = orderNumber || '—';
 document.getElementById('trackLink').href = `track.html?order=${orderNumber}`;
-document.getElementById('amountDue').textContent = amount ? amount + ' ريال' : 'يُحدَّد لاحقاً';
+document.getElementById('amountDue').textContent = amount ? amount + ' ر.س' : 'يُحدَّد لاحقاً';
 
 /* نسخ رقم الطلب بالضغط عليه */
 document.getElementById('orderNumberBox').addEventListener('click', () => {
