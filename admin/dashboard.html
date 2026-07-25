@@ -11,21 +11,21 @@
 body{background:var(--clr-cream);}
 .topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:var(--clr-paper);box-shadow:var(--shadow-soft);}
 .wrap{max-width:1180px;margin:0 auto;padding:24px;}
-.tabs{display:flex;gap:10px;margin-bottom:20px;}
+.tabs{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
 .tab-btn{padding:10px 20px;border-radius:100px;font-weight:800;font-size:.9rem;background:var(--clr-paper);color:var(--clr-ink-soft);}
 .tab-btn.active{background:var(--clr-primary);color:#fff;}
 .tab-panel{display:none;}
 .tab-panel.active{display:block;}
 
-.stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:26px;}
-.stat-card{background:var(--clr-paper);border-radius:16px;padding:18px;text-align:center;box-shadow:var(--shadow-soft);}
-.stat-card .num{font-size:1.6rem;font-weight:900;color:var(--clr-primary);}
-.stat-card .lbl{font-size:.78rem;color:var(--clr-ink-soft);margin-top:4px;}
+.stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:26px;}
+.stat-card{background:var(--clr-paper);border-radius:16px;padding:16px;text-align:center;box-shadow:var(--shadow-soft);}
+.stat-card .num{font-size:1.4rem;font-weight:900;color:var(--clr-primary);}
+.stat-card .lbl{font-size:.72rem;color:var(--clr-ink-soft);margin-top:4px;}
 .toolbar{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
 .toolbar input,.toolbar select{width:auto;flex:1;min-width:160px;}
 .overlay{position:fixed;inset:0;background:rgba(20,12,8,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
 .overlay.open{display:flex;}
-.modal{background:var(--clr-paper);border-radius:20px;max-width:600px;width:100%;max-height:86vh;overflow-y:auto;padding:26px;}
+.modal{background:var(--clr-paper);border-radius:20px;max-width:660px;width:100%;max-height:86vh;overflow-y:auto;padding:26px;}
 .detail-row{display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px solid color-mix(in srgb, var(--clr-ink) 8%, transparent);font-size:.9rem;}
 .detail-row b{color:var(--clr-ink-soft);font-weight:600;flex-shrink:0;}
 .new-badge{background:var(--clr-primary);color:#fff;font-size:.68rem;font-weight:800;padding:2px 9px;border-radius:100px;margin-inline-start:6px;}
@@ -37,6 +37,10 @@ body{background:var(--clr-cream);}
 .product-card-admin img{width:100%;height:130px;object-fit:cover;background:var(--clr-cream);}
 .product-card-admin .pc-body{padding:14px;}
 .product-card-admin.inactive{opacity:.5;}
+.item-block{background:var(--clr-cream);border-radius:14px;padding:16px;margin-bottom:14px;}
+.item-block-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.item-block-head b{color:var(--clr-primary);}
+.coupon-row{display:flex;justify-content:space-between;align-items:center;background:var(--clr-paper);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow-soft);}
 @media(max-width:900px){.stats-grid{grid-template-columns:repeat(3,1fr);} .charts-grid{grid-template-columns:1fr;} .products-grid-admin{grid-template-columns:1fr;}}
 </style>
 </head>
@@ -50,28 +54,34 @@ body{background:var(--clr-cream);}
 <div class="wrap">
   <div class="tabs">
     <button class="tab-btn active" data-tab="ordersTab">الطلبات</button>
+    <button class="tab-btn" data-tab="couponsTab">الكوبونات</button>
     <button class="tab-btn" data-tab="productsTab">المنتجات</button>
     <button class="tab-btn" data-tab="statsTab">الإحصائيات والتسويق</button>
   </div>
 
-  <!-- ===================== تبويب الطلبات ===================== -->
   <div class="tab-panel active" id="ordersTab">
     <div class="stats-grid" id="statsGrid"></div>
     <div class="card">
       <div class="toolbar">
-        <input type="text" id="searchInput" placeholder="ابحث برقم الطلب / الاسم / الجوال">
-        <select id="statusFilter"><option value="">كل الحالات</option></select>
+        <input type="text" id="searchInput" placeholder="ابحث برقم الطلب / الاسم / الجوال / اسم الطفل">
+        <select id="statusFilter"><option value="">كل حالات المنتجات</option></select>
       </div>
       <div style="overflow-x:auto;">
         <table>
-          <thead><tr><th>رقم الطلب</th><th>العميل</th><th>الطفل</th><th>المنتج</th><th>التاريخ</th><th>الحالة</th><th></th></tr></thead>
+          <thead><tr><th>رقم الطلب</th><th>العميل</th><th>عدد المنتجات</th><th>الإجمالي</th><th>التاريخ</th><th></th></tr></thead>
           <tbody id="ordersBody"></tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- ===================== تبويب المنتجات ===================== -->
+  <div class="tab-panel" id="couponsTab">
+    <div class="card" style="margin-bottom:20px;">
+      <button class="btn" id="addCouponBtn">+ إنشاء كوبون جديد</button>
+    </div>
+    <div id="couponsList"></div>
+  </div>
+
   <div class="tab-panel" id="productsTab">
     <div class="card" style="margin-bottom:20px;">
       <button class="btn" id="addProductBtn">+ إضافة منتج جديد</button>
@@ -79,10 +89,9 @@ body{background:var(--clr-cream);}
     <div class="products-grid-admin" id="productsGridAdmin"></div>
   </div>
 
-  <!-- ===================== تبويب الإحصائيات ===================== -->
   <div class="tab-panel" id="statsTab">
     <div class="card">
-      <h3 style="margin-bottom:14px;">فلترة الطلبات</h3>
+      <h3 style="margin-bottom:14px;">فلترة المنتجات المخصَّصة</h3>
       <div class="toolbar">
         <input type="text" id="fName" placeholder="اسم الطفل أو ولي الأمر">
         <select id="fAge"><option value="">كل الأعمار</option></select>
@@ -106,12 +115,14 @@ body{background:var(--clr-cream);}
 
 <div class="overlay" id="detailOverlay"><div class="modal" id="detailModal"></div></div>
 <div class="overlay" id="productOverlay"><div class="modal" id="productModal"></div></div>
+<div class="overlay" id="couponOverlay"><div class="modal" id="couponModal" style="max-width:420px;"></div></div>
 
 <script src="../shared/config.js"></script>
 <script src="../shared/drive-upload.js"></script>
 <script>
 let allOrders = [];
 let allProducts = [];
+let allCoupons = [];
 let charts = {};
 
 supabaseClient.auth.getSession().then(({ data }) => {
@@ -123,7 +134,6 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   window.location.href = 'login.html';
 });
 
-/* التبويبات */
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -145,30 +155,40 @@ function init() {
 
   loadOrders();
   loadProducts();
+  loadCoupons();
 
   document.getElementById('searchInput').addEventListener('input', renderTable);
   document.getElementById('statusFilter').addEventListener('change', renderTable);
   ['fName','fAge','fGender','fCity','fValue'].forEach(id => document.getElementById(id).addEventListener('input', renderCharts));
 
   supabaseClient.channel('orders-realtime').on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, loadOrders).subscribe();
+  supabaseClient.channel('items-realtime').on('postgres_changes', { event: '*', schema: 'public', table: 'order_items' }, loadOrders).subscribe();
 
   document.getElementById('addProductBtn').addEventListener('click', () => openProductForm(null));
+  document.getElementById('addCouponBtn').addEventListener('click', () => openCouponForm(null));
 }
 
-/* ===================== الطلبات ===================== */
 async function loadOrders() {
-  const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+  const { data, error } = await supabaseClient
+    .from('orders')
+    .select('*, order_items(*)')
+    .order('created_at', { ascending: false });
   if (error) { console.error(error); return; }
-  allOrders = data;
+  allOrders = data.map(o => ({ ...o, items: o.order_items || [] }));
   renderStats();
   renderTable();
   populateValueFilter();
 }
 
+function allItemsFlat() {
+  return allOrders.flatMap(o => o.items.map(it => ({ ...it, order_number: o.order_number, parent_name: o.parent_name, phone: o.phone, city: o.city, is_new: o.is_new, order_id: o.id })));
+}
+
 function renderStats() {
+  const items = allItemsFlat();
   const counts = { total: allOrders.length };
   Object.keys(STATUS_LABELS).forEach(k => counts[k] = 0);
-  allOrders.forEach(o => { if (counts[o.status] !== undefined) counts[o.status]++; });
+  items.forEach(it => { if (counts[it.status] !== undefined) counts[it.status]++; });
   const cards = [['إجمالي الطلبات', counts.total], ...Object.entries(STATUS_LABELS).map(([k,l]) => [l, counts[k]])];
   document.getElementById('statsGrid').innerHTML = cards.map(([lbl,num]) => `<div class="stat-card"><div class="num">${num}</div><div class="lbl">${lbl}</div></div>`).join('');
 }
@@ -176,100 +196,193 @@ function renderStats() {
 function renderTable() {
   const q = document.getElementById('searchInput').value.trim().toLowerCase();
   const statusFilter = document.getElementById('statusFilter').value;
+
   const filtered = allOrders.filter(o => {
-    const matchesQ = !q || o.order_number.toLowerCase().includes(q) || o.parent_name.toLowerCase().includes(q) || (o.phone||'').includes(q);
-    const matchesStatus = !statusFilter || o.status === statusFilter;
+    const matchesQ = !q || o.order_number.toLowerCase().includes(q) || o.parent_name.toLowerCase().includes(q)
+      || (o.phone||'').includes(q) || o.items.some(it => (it.child_name||'').toLowerCase().includes(q));
+    const matchesStatus = !statusFilter || o.items.some(it => it.status === statusFilter);
     return matchesQ && matchesStatus;
   });
+
   document.getElementById('ordersBody').innerHTML = filtered.map(o => `
     <tr>
       <td>${o.order_number} ${o.is_new ? '<span class="new-badge">جديد</span>' : ''}</td>
       <td>${o.parent_name}</td>
-      <td>${o.child_name}</td>
-      <td>${o.product_title}</td>
+      <td>${o.items.length} منتج</td>
+      <td>${o.total} ريال</td>
       <td>${new Date(o.created_at).toLocaleDateString('ar-SA')}</td>
-      <td><span class="badge" style="background:${STATUS_COLORS[o.status]};">${STATUS_LABELS[o.status]}</span></td>
       <td><button class="btn btn-outline" style="padding:6px 16px;font-size:.8rem;" onclick="openDetail('${o.id}')">عرض</button></td>
     </tr>
-  `).join('') || `<tr><td colspan="7" style="text-align:center;color:var(--clr-ink-soft);padding:30px;">لا توجد نتائج</td></tr>`;
+  `).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--clr-ink-soft);padding:30px;">لا توجد نتائج</td></tr>`;
 }
 
 function openDetail(id) {
   const o = allOrders.find(x => x.id === id);
   if (!o) return;
-  const photosHtml = (o.photo_urls || []).map(u => `<a href="${u}" target="_blank" class="btn btn-outline" style="padding:6px 14px;font-size:.78rem;margin:3px;">صورة</a>`).join('') || 'لا توجد صور';
+
+  const itemsHtml = o.items.map(it => {
+    const photosHtml = (it.photo_urls || []).map(u => `<a href="${u}" target="_blank" class="btn btn-outline" style="padding:5px 12px;font-size:.75rem;margin:2px;">صورة</a>`).join('') || 'لا توجد صور';
+    return `
+    <div class="item-block">
+      <div class="item-block-head">
+        <b>${it.product_title}</b>
+        <button class="btn btn-outline" style="padding:5px 12px;font-size:.75rem;" onclick="copyItemDetails('${it.id}')">نسخ بيانات الطفل</button>
+      </div>
+      <div class="detail-row"><b>اسم الطفل</b><span>${it.child_name}</span></div>
+      <div class="detail-row"><b>العمر</b><span>${it.child_age||'—'}</span></div>
+      <div class="detail-row"><b>الجنس</b><span>${it.child_gender||'—'}</span></div>
+      <div class="detail-row"><b>معلومة عن الطفل</b><span>${it.child_note||'—'}</span></div>
+      <div class="detail-row"><b>القيمة</b><span>${it.story_value||'—'}</span></div>
+      <div class="detail-row"><b>الإهداء</b><span>${it.dedication_text||'—'}</span></div>
+      <div class="detail-row"><b>هواية/تفصيلة</b><span>${it.hobby_detail||'—'}</span></div>
+      <div class="detail-row"><b>الصور</b><span>${photosHtml}</span></div>
+      <label style="margin-top:12px;">حالة هذا المنتج</label>
+      <select id="statusSelect_${it.id}">
+        ${Object.entries(STATUS_LABELS).map(([k,l]) => `<option value="${k}" ${k===it.status?'selected':''}>${l}</option>`).join('')}
+      </select>
+      <button class="btn btn-outline btn-block" style="margin-top:8px;padding:8px;font-size:.85rem;" onclick="updateItemStatus('${it.id}', '${o.id}')">حفظ حالة هذا المنتج</button>
+    </div>`;
+  }).join('');
 
   document.getElementById('detailModal').innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <h3>تفاصيل الطلب ${o.order_number} ${o.is_new ? '<span class="new-badge">جديد</span>' : ''}</h3>
-      <button class="btn btn-outline" style="padding:6px 14px;font-size:.78rem;" onclick="copyOrderDetails('${o.id}')">نسخ بيانات الطفل</button>
-    </div>
-    <div id="detailFields">
-      <div class="detail-row"><b>ولي الأمر</b><span>${o.parent_name}</span></div>
-      <div class="detail-row"><b>الجوال</b><span>${o.phone}</span></div>
-      <div class="detail-row"><b>البريد الإلكتروني</b><span>${o.email || '—'}</span></div>
-      <div class="detail-row"><b>المدينة</b><span>${o.city}</span></div>
-      <div class="detail-row"><b>اسم الطفل</b><span>${o.child_name}</span></div>
-      <div class="detail-row"><b>عمر الطفل</b><span>${o.child_age || '—'}</span></div>
-      <div class="detail-row"><b>جنس الطفل</b><span>${o.child_gender || '—'}</span></div>
-      <div class="detail-row"><b>معلومة عن الطفل</b><span>${o.child_note || '—'}</span></div>
-      <div class="detail-row"><b>المنتج</b><span>${o.product_title} (${o.product_price} ريال)</span></div>
-      <div class="detail-row"><b>القيمة المطلوبة</b><span>${o.story_value || '—'}</span></div>
-      <div class="detail-row"><b>الإهداء</b><span>${o.dedication_text ? (o.dedication_type==='named' ? 'باسم: '+o.dedication_text : o.dedication_text) : '—'}</span></div>
-      <div class="detail-row"><b>هواية/تفصيلة للقصة</b><span>${o.hobby_detail || '—'}</span></div>
-      <div class="detail-row"><b>موافقة الخصوصية</b><span>${o.consent_privacy ? 'موافق ✅' : 'غير موافق ❌'}</span></div>
-      <div class="detail-row"><b>الصور</b><span>${photosHtml}</span></div>
-      <div class="detail-row"><b>سند التحويل</b><span>${o.receipt_url ? `<a href="${o.receipt_url}" target="_blank">عرض السند</a>` : 'لم يُرفع بعد'}</span></div>
-    </div>
+    <h3 style="margin-bottom:14px;">تفاصيل الطلب ${o.order_number} ${o.is_new ? '<span class="new-badge">جديد</span>' : ''}</h3>
+    <div class="detail-row"><b>ولي الأمر</b><span>${o.parent_name}</span></div>
+    <div class="detail-row"><b>الجوال</b><span>${o.phone}</span></div>
+    <div class="detail-row"><b>البريد الإلكتروني</b><span>${o.email || '—'}</span></div>
+    <div class="detail-row"><b>المدينة</b><span>${o.city}</span></div>
+    <div class="detail-row"><b>السعر الأساسي</b><span>${o.subtotal} ريال</span></div>
+    <div class="detail-row"><b>الخصم</b><span>${o.discount_amount>0 ? '−'+o.discount_amount+' ريال ('+(o.coupon_code||'')+')' : '—'}</span></div>
+    <div class="detail-row"><b>الإجمالي</b><span>${o.total} ريال</span></div>
+    <div class="detail-row"><b>سند التحويل</b><span>${o.receipt_url ? `<a href="${o.receipt_url}" target="_blank">عرض السند</a>` : 'لم يُرفع بعد'}</span></div>
 
-    <label style="margin-top:18px;">تغيير الحالة</label>
-    <select id="statusSelect">
-      ${Object.entries(STATUS_LABELS).map(([k,l]) => `<option value="${k}" ${k===o.status?'selected':''}>${l}</option>`).join('')}
-    </select>
-    <button class="btn btn-block" style="margin-top:14px;" onclick="updateStatus('${o.id}')">حفظ الحالة</button>
+    <h4 style="margin:18px 0 10px;color:var(--clr-primary);">المنتجات (${o.items.length})</h4>
+    ${itemsHtml}
+
     <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="closeDetail()">إغلاق</button>
     <div id="detailMsg"></div>
   `;
   document.getElementById('detailOverlay').classList.add('open');
 }
 
-function copyOrderDetails(id) {
-  const o = allOrders.find(x => x.id === id);
-  const text = `بيانات الطفل — طلب ${o.order_number}
-اسم الطفل: ${o.child_name}
-عمر الطفل: ${o.child_age || '—'}
-جنس الطفل: ${o.child_gender || '—'}
-معلومة عن الطفل: ${o.child_note || '—'}
-القيمة المطلوبة: ${o.story_value || '—'}
-الإهداء: ${o.dedication_text || '—'}
-هواية/تفصيلة للقصة: ${o.hobby_detail || '—'}
-الصور: ${(o.photo_urls||[]).join(' | ') || '—'}`;
+function copyItemDetails(itemId) {
+  const it = allItemsFlat().find(x => x.id === itemId);
+  if (!it) return;
+  const text = `بيانات الطفل — ${it.order_number} — ${it.product_title}
+اسم الطفل: ${it.child_name}
+العمر: ${it.child_age || '—'}
+الجنس: ${it.child_gender || '—'}
+معلومة عن الطفل: ${it.child_note || '—'}
+القيمة: ${it.story_value || '—'}
+الإهداء: ${it.dedication_text || '—'}
+هواية/تفصيلة: ${it.hobby_detail || '—'}
+الصور: ${(it.photo_urls||[]).join(' | ') || '—'}`;
   navigator.clipboard.writeText(text).then(() => alert('تم نسخ بيانات الطفل ✅'));
 }
 
 function closeDetail() { document.getElementById('detailOverlay').classList.remove('open'); }
 
-async function updateStatus(id) {
-  const newStatus = document.getElementById('statusSelect').value;
-  const { error } = await supabaseClient.from('orders').update({ status: newStatus, is_new: false }).eq('id', id);
-  if (error) {
-    document.getElementById('detailMsg').innerHTML = `<div class="error-box">فشل التحديث: ${error.message}</div>`;
-    return;
-  }
+async function updateItemStatus(itemId, orderId) {
+  const newStatus = document.getElementById(`statusSelect_${itemId}`).value;
+  const { error } = await supabaseClient.from('order_items').update({ status: newStatus }).eq('id', itemId);
+  await supabaseClient.from('orders').update({ is_new: false }).eq('id', orderId);
+  const msgEl = document.getElementById('detailMsg');
+  if (error) { msgEl.innerHTML = `<div class="error-box">فشل التحديث: ${error.message}</div>`; return; }
 
-  // تحديث فوري محلي (بدون انتظار التحديث اللحظي من الخادم)
-  const localOrder = allOrders.find(x => x.id === id);
-  if (localOrder) { localOrder.status = newStatus; localOrder.is_new = false; }
-  renderStats();
-  renderTable();
-  openDetail(id); // إعادة رسم نافذة التفاصيل نفسها حتى تختفي شارة "جديد" منها أيضاً
-  document.getElementById('detailMsg').innerHTML = `<div class="success-box">تم تحديث الحالة بنجاح</div>`;
+  const o = allOrders.find(x => x.id === orderId);
+  if (o) { o.is_new = false; const it = o.items.find(x => x.id === itemId); if (it) it.status = newStatus; }
+  renderStats(); renderTable();
+  openDetail(orderId);
+  document.getElementById('detailMsg').innerHTML = `<div class="success-box">تم تحديث حالة المنتج بنجاح</div>`;
 }
 
 document.getElementById('detailOverlay').addEventListener('click', (e) => { if (e.target.id === 'detailOverlay') closeDetail(); });
 document.getElementById('productOverlay').addEventListener('click', (e) => { if (e.target.id === 'productOverlay') closeProductForm(); });
+document.getElementById('couponOverlay').addEventListener('click', (e) => { if (e.target.id === 'couponOverlay') closeCouponForm(); });
 
-/* ===================== المنتجات ===================== */
+async function loadCoupons() {
+  const { data, error } = await supabaseClient.from('coupons').select('*').order('created_at', { ascending: false });
+  if (error) { console.error(error); return; }
+  allCoupons = data;
+  renderCoupons();
+}
+
+function renderCoupons() {
+  document.getElementById('couponsList').innerHTML = allCoupons.map(c => `
+    <div class="coupon-row">
+      <div>
+        <b style="font-size:1rem;">${c.code}</b> ${c.active ? '' : '<span style="color:var(--clr-ink-soft);font-size:.78rem;">(معطّل)</span>'}<br>
+        <span style="font-size:.82rem;color:var(--clr-ink-soft);">
+          ${c.discount_type==='percent' ? c.discount_value+'%' : c.discount_value+' ريال'} خصم
+          ${c.start_date||c.end_date ? ' | من '+(c.start_date||'—')+' إلى '+(c.end_date||'—') : ''}
+          | استُخدم ${c.usage_count} مرة${c.usage_limit ? ' من '+c.usage_limit : ''}
+        </span>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline" style="padding:6px 14px;font-size:.78rem;" onclick='openCouponForm(${JSON.stringify(c).replace(/'/g,"&#39;")})'>تعديل</button>
+        <button class="btn btn-outline" style="padding:6px 14px;font-size:.78rem;" onclick="deleteCoupon('${c.id}')">حذف</button>
+      </div>
+    </div>
+  `).join('') || '<p style="color:var(--clr-ink-soft);">لا توجد كوبونات بعد.</p>';
+}
+
+function openCouponForm(c) {
+  const isEdit = !!c;
+  document.getElementById('couponModal').innerHTML = `
+    <h3 style="margin-bottom:14px;">${isEdit ? 'تعديل كوبون' : 'إنشاء كوبون جديد'}</h3>
+    <label class="required">رمز الكوبون</label>
+    <input type="text" id="cCode" value="${isEdit ? c.code : ''}" style="text-transform:uppercase;">
+    <label class="required">نوع الخصم</label>
+    <select id="cType">
+      <option value="percent" ${isEdit && c.discount_type==='percent' ? 'selected':''}>نسبة مئوية %</option>
+      <option value="fixed" ${isEdit && c.discount_type==='fixed' ? 'selected':''}>قيمة ثابتة (ريال)</option>
+    </select>
+    <label class="required">قيمة الخصم</label>
+    <input type="number" id="cValue" value="${isEdit ? c.discount_value : ''}">
+    <label>تاريخ البداية (اختياري)</label>
+    <input type="date" id="cStart" value="${isEdit && c.start_date ? c.start_date : ''}">
+    <label>تاريخ الانتهاء (اختياري)</label>
+    <input type="date" id="cEnd" value="${isEdit && c.end_date ? c.end_date : ''}">
+    <label>الحد الأقصى لعدد مرات الاستخدام (اختياري)</label>
+    <input type="number" id="cLimit" value="${isEdit && c.usage_limit ? c.usage_limit : ''}">
+    <label style="display:flex;align-items:center;gap:8px;margin-top:14px;">
+      <input type="checkbox" id="cActive" style="width:auto;" ${(!isEdit || c.active) ? 'checked' : ''}> الكوبون مفعّل
+    </label>
+    <button class="btn btn-block" style="margin-top:16px;" onclick="saveCoupon(${isEdit ? `'${c.id}'` : 'null'})">حفظ</button>
+    <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="closeCouponForm()">إلغاء</button>
+    <div id="couponMsgForm"></div>
+  `;
+  document.getElementById('couponOverlay').classList.add('open');
+}
+function closeCouponForm() { document.getElementById('couponOverlay').classList.remove('open'); }
+
+async function saveCoupon(id) {
+  const msgEl = document.getElementById('couponMsgForm');
+  const payload = {
+    code: document.getElementById('cCode').value.trim().toUpperCase(),
+    discount_type: document.getElementById('cType').value,
+    discount_value: parseFloat(document.getElementById('cValue').value) || 0,
+    start_date: document.getElementById('cStart').value || null,
+    end_date: document.getElementById('cEnd').value || null,
+    usage_limit: document.getElementById('cLimit').value ? parseInt(document.getElementById('cLimit').value) : null,
+    active: document.getElementById('cActive').checked,
+  };
+  if (!payload.code) { msgEl.innerHTML = `<div class="error-box">رمز الكوبون مطلوب</div>`; return; }
+
+  const { error } = id
+    ? await supabaseClient.from('coupons').update(payload).eq('id', id)
+    : await supabaseClient.from('coupons').insert(payload);
+
+  if (error) { msgEl.innerHTML = `<div class="error-box">فشل الحفظ: ${error.message}</div>`; return; }
+  closeCouponForm();
+  loadCoupons();
+}
+
+async function deleteCoupon(id) {
+  if (!confirm('هل أنت متأكد من حذف هذا الكوبون؟')) return;
+  await supabaseClient.from('coupons').delete().eq('id', id);
+  loadCoupons();
+}
+
 async function loadProducts() {
   const { data, error } = await supabaseClient.from('products').select('*').order('sort_order', { ascending: true });
   if (error) { console.error(error); return; }
@@ -358,25 +471,24 @@ async function deleteProduct(id) {
   loadProducts();
 }
 
-/* ===================== الإحصائيات والتسويق ===================== */
 function populateValueFilter() {
-  const values = [...new Set(allOrders.map(o => o.story_value).filter(Boolean))];
+  const values = [...new Set(allItemsFlat().map(it => it.story_value).filter(Boolean))];
   const el = document.getElementById('fValue');
   el.innerHTML = '<option value="">كل القيم</option>' + values.map(v => `<option value="${v}">${v}</option>`).join('');
 }
 
-function getFilteredOrders() {
+function getFilteredItems() {
   const name = document.getElementById('fName').value.trim().toLowerCase();
   const age = document.getElementById('fAge').value;
   const gender = document.getElementById('fGender').value;
   const city = document.getElementById('fCity').value.trim().toLowerCase();
   const value = document.getElementById('fValue').value;
-  return allOrders.filter(o =>
-    (!name || o.child_name.toLowerCase().includes(name) || o.parent_name.toLowerCase().includes(name)) &&
-    (!age || o.child_age === age) &&
-    (!gender || o.child_gender === gender) &&
-    (!city || (o.city||'').toLowerCase().includes(city)) &&
-    (!value || o.story_value === value)
+  return allItemsFlat().filter(it =>
+    (!name || (it.child_name||'').toLowerCase().includes(name) || (it.parent_name||'').toLowerCase().includes(name)) &&
+    (!age || it.child_age === age) &&
+    (!gender || it.child_gender === gender) &&
+    (!city || (it.city||'').toLowerCase().includes(city)) &&
+    (!value || it.story_value === value)
   );
 }
 
@@ -387,7 +499,7 @@ function countBy(arr, keyFn) {
 }
 
 function renderCharts() {
-  const filtered = getFilteredOrders();
+  const filtered = getFilteredItems();
   document.getElementById('filterCount').textContent = filtered.length;
 
   const palette = ['#D85A30','#FAC775','#2F6E68','#B94826','#8A6A57','#3F8E86','#E8813F','#1F4E4A'];
