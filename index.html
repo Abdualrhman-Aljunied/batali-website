@@ -889,7 +889,14 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
     <div style="padding:26px 24px 10px;"><h2 style="font-weight:900;font-size:1.3rem;">سلة المشتريات</h2></div>
     <div class="cart-items" id="cartItems"></div>
     <div class="cart-summary">
-      <div class="cart-total-row"><span>المجموع</span><span id="cartTotal">0 ريال</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <input type="text" id="couponInput" placeholder="كود الخصم (إن وجد)" style="flex:1;border:2px solid color-mix(in srgb, var(--clr-primary) 20%, transparent);border-radius:12px;padding:10px 14px;font-family:inherit;background:var(--clr-cream);color:var(--clr-ink);">
+        <button class="btn-ghost" id="applyCouponBtn" style="padding:10px 18px;white-space:nowrap;">تطبيق</button>
+      </div>
+      <div id="couponMsg" style="font-size:.8rem;margin-bottom:10px;"></div>
+      <div class="cart-total-row" style="font-size:.88rem;font-weight:600;color:var(--clr-ink-soft);"><span>السعر الأساسي</span><span id="cartSubtotal">0 ريال</span></div>
+      <div class="cart-total-row" id="discountRow" style="display:none;font-size:.88rem;font-weight:600;color:var(--clr-teal);"><span>الخصم</span><span id="cartDiscount">0 ريال</span></div>
+      <div class="cart-total-row"><span>الإجمالي</span><span id="cartTotal">0 ريال</span></div>
       <button class="whatsapp-btn" id="checkoutBtn" style="background:linear-gradient(90deg,var(--clr-primary),var(--clr-primary-dark));">
         <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
         إتمام الطلب
@@ -918,6 +925,7 @@ async function loadProducts(){
 }
 
 let cart = [];
+let appliedCoupon = null; // { code, discount_type, discount_value }
 
 /* THEME */
 const themeToggle = document.getElementById('themeToggle');
@@ -1023,20 +1031,27 @@ const cartBadge = document.getElementById('cartBadge');
 
 function addToCart(id){
   const s = STORIES.find(x=>x.id===id);
-  cart.push(s);
+  const existing = cart.find(c => c.id === id);
+  if (existing) { existing.qty++; } else { cart.push({ ...s, qty: 1 }); }
   updateCartUI();
   closeOverlay(productOverlay);
   cartBtn.style.transform = 'scale(1.2)';
   setTimeout(()=> cartBtn.style.transform='', 250);
   openOverlay(cartOverlay);
 }
+function changeQty(idx, delta){
+  cart[idx].qty += delta;
+  if (cart[idx].qty <= 0) cart.splice(idx,1);
+  updateCartUI();
+}
 function removeFromCart(idx){
   cart.splice(idx,1);
   updateCartUI();
 }
 function updateCartUI(){
-  cartBadge.textContent = cart.length;
-  cartBadge.classList.toggle('show', cart.length>0);
+  const totalQty = cart.reduce((sum,s)=>sum+s.qty,0);
+  cartBadge.textContent = totalQty;
+  cartBadge.classList.toggle('show', totalQty>0);
   if(cart.length===0){
     cartItemsEl.innerHTML = `<div class="cart-empty">السلة فارغة، تصفّح القصص وأضف قصة طفلك 💛</div>`;
   } else {
@@ -1044,29 +1059,68 @@ function updateCartUI(){
       <div class="cart-item">
         <div>
           <div class="cart-item-name">${s.title}</div>
-          <div class="cart-item-price">${s.price} ريال</div>
+          <div class="cart-item-price">${s.price} ريال × ${s.qty} = ${s.price * s.qty} ريال</div>
         </div>
-        <button class="remove-btn" onclick="removeFromCart(${idx})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="remove-btn" onclick="changeQty(${idx}, -1)" aria-label="إنقاص الكمية">−</button>
+          <span style="font-weight:800;min-width:16px;text-align:center;">${s.qty}</span>
+          <button class="remove-btn" onclick="changeQty(${idx}, 1)" aria-label="زيادة الكمية">+</button>
+          <button class="remove-btn" onclick="removeFromCart(${idx})" aria-label="حذف">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
       </div>
     `).join('');
   }
-  const total = cart.reduce((sum,s)=>sum+s.price,0);
+  const subtotal = cart.reduce((sum,s)=>sum+s.price*s.qty,0);
+  let discount = 0;
+  if (appliedCoupon) {
+    discount = appliedCoupon.discount_type === 'percent'
+      ? Math.round(subtotal * appliedCoupon.discount_value / 100)
+      : Math.min(appliedCoupon.discount_value, subtotal);
+  }
+  const total = Math.max(0, subtotal - discount);
+  document.getElementById('cartSubtotal').textContent = subtotal + ' ريال';
+  document.getElementById('discountRow').style.display = discount > 0 ? 'flex' : 'none';
+  document.getElementById('cartDiscount').textContent = '−' + discount + ' ريال';
   cartTotalEl.textContent = total + ' ريال';
 }
 updateCartUI();
 cartBtn.addEventListener('click', ()=> openOverlay(cartOverlay));
 cartClose.addEventListener('click', ()=> closeOverlay(cartOverlay));
 
-/* إتمام الطلب: تحويل لصفحة نموذج الطلب الكامل */
+/* الكوبون */
+document.getElementById('applyCouponBtn').addEventListener('click', async ()=>{
+  const code = document.getElementById('couponInput').value.trim();
+  const msgEl = document.getElementById('couponMsg');
+  if(!code){ return; }
+  msgEl.style.color = 'var(--clr-ink-soft)';
+  msgEl.textContent = 'جاري التحقق...';
+  const { data, error } = await supabaseClient.rpc('check_coupon', { p_code: code });
+  const result = data && data[0];
+  if (error || !result || !result.valid) {
+    appliedCoupon = null;
+    msgEl.style.color = 'var(--clr-primary)';
+    msgEl.textContent = (result && result.message) || 'تعذّر التحقق من الكوبون';
+  } else {
+    appliedCoupon = { code, discount_type: result.discount_type, discount_value: result.discount_value };
+    msgEl.style.color = 'var(--clr-teal)';
+    msgEl.textContent = result.message;
+  }
+  updateCartUI();
+});
+
+/* إتمام الطلب: توسيع الكميات لعناصر مستقلة (كل نسخة تخصيص منفصل) وتحويل لصفحة الطلب */
 document.getElementById('checkoutBtn').addEventListener('click', ()=>{
   if(cart.length===0){ return; }
-  if(cart.length > 1){
-    alert('نظام الطلبات الحالي يعالج قصة واحدة بكل طلب. سيتم إتمام طلب أول قصة في السلة، وكرّر نفس الخطوات لبقية القصص.');
-  }
-  const item = cart[0];
-  localStorage.setItem('batali_checkout_item', JSON.stringify({ title:item.title, price:item.price }));
+  const pendingItems = [];
+  cart.forEach(c => {
+    for (let i = 1; i <= c.qty; i++) {
+      pendingItems.push({ product_id: c.id, product_title: c.title, product_price: c.price, item_index: i, copy_label: c.qty > 1 ? `(نسخة ${i})` : '' });
+    }
+  });
+  localStorage.setItem('batali_pending_items', JSON.stringify(pendingItems));
+  localStorage.setItem('batali_coupon_code', appliedCoupon ? appliedCoupon.code : '');
   window.location.href = 'checkout.html';
 });
 
