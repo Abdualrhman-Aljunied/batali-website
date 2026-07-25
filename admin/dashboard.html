@@ -209,7 +209,7 @@ function renderTable() {
       <td>${o.order_number} ${o.is_new ? '<span class="new-badge">جديد</span>' : ''}</td>
       <td>${o.parent_name}</td>
       <td>${o.items.length} منتج</td>
-      <td>${o.total} ريال</td>
+      <td>${o.total} ر.س</td>
       <td>${new Date(o.created_at).toLocaleDateString('ar-SA')}</td>
       <td><button class="btn btn-outline" style="padding:6px 16px;font-size:.8rem;" onclick="openDetail('${o.id}')">عرض</button></td>
     </tr>
@@ -250,9 +250,9 @@ function openDetail(id) {
     <div class="detail-row"><b>الجوال</b><span>${o.phone}</span></div>
     <div class="detail-row"><b>البريد الإلكتروني</b><span>${o.email || '—'}</span></div>
     <div class="detail-row"><b>المدينة</b><span>${o.city}</span></div>
-    <div class="detail-row"><b>السعر الأساسي</b><span>${o.subtotal} ريال</span></div>
-    <div class="detail-row"><b>الخصم</b><span>${o.discount_amount>0 ? '−'+o.discount_amount+' ريال ('+(o.coupon_code||'')+')' : '—'}</span></div>
-    <div class="detail-row"><b>الإجمالي</b><span>${o.total} ريال</span></div>
+    <div class="detail-row"><b>السعر الأساسي</b><span>${o.subtotal} ر.س</span></div>
+    <div class="detail-row"><b>الخصم</b><span>${o.discount_amount>0 ? '−'+o.discount_amount+' ر.س ('+(o.coupon_code||'')+')' : '—'}</span></div>
+    <div class="detail-row"><b>الإجمالي</b><span>${o.total} ر.س</span></div>
     <div class="detail-row"><b>سند التحويل</b><span>${o.receipt_url ? `<a href="${o.receipt_url}" target="_blank">عرض السند</a>` : 'لم يُرفع بعد'}</span></div>
 
     <h4 style="margin:18px 0 10px;color:var(--clr-primary);">المنتجات (${o.items.length})</h4>
@@ -312,7 +312,7 @@ function renderCoupons() {
       <div>
         <b style="font-size:1rem;">${c.code}</b> ${c.active ? '' : '<span style="color:var(--clr-ink-soft);font-size:.78rem;">(معطّل)</span>'}<br>
         <span style="font-size:.82rem;color:var(--clr-ink-soft);">
-          ${c.discount_type==='percent' ? c.discount_value+'%' : c.discount_value+' ريال'} خصم
+          ${c.discount_type==='percent' ? c.discount_value+'%' : c.discount_value+' ر.س'} خصم
           ${c.start_date||c.end_date ? ' | من '+(c.start_date||'—')+' إلى '+(c.end_date||'—') : ''}
           | استُخدم ${c.usage_count} مرة${c.usage_limit ? ' من '+c.usage_limit : ''}
         </span>
@@ -334,7 +334,7 @@ function openCouponForm(c) {
     <label class="required">نوع الخصم</label>
     <select id="cType">
       <option value="percent" ${isEdit && c.discount_type==='percent' ? 'selected':''}>نسبة مئوية %</option>
-      <option value="fixed" ${isEdit && c.discount_type==='fixed' ? 'selected':''}>قيمة ثابتة (ريال)</option>
+      <option value="fixed" ${isEdit && c.discount_type==='fixed' ? 'selected':''}>قيمة ثابتة (ر.س)</option>
     </select>
     <label class="required">قيمة الخصم</label>
     <input type="number" id="cValue" value="${isEdit ? c.discount_value : ''}">
@@ -396,7 +396,7 @@ function renderProductsAdmin() {
       <img src="${p.image_url || ''}" alt="${p.title}" onerror="this.style.display='none'">
       <div class="pc-body">
         <div style="font-weight:800;margin-bottom:4px;">${p.title}</div>
-        <div style="font-size:.82rem;color:var(--clr-ink-soft);margin-bottom:8px;">${p.tag || ''} — ${p.price} ريال ${p.active ? '' : '(غير مفعّل)'}</div>
+        <div style="font-size:.82rem;color:var(--clr-ink-soft);margin-bottom:8px;">${p.tag || ''} — ${p.price} ر.س ${p.active ? '' : '(غير مفعّل)'}</div>
         <div style="display:flex;gap:8px;">
           <button class="btn btn-outline" style="padding:6px 14px;font-size:.78rem;" onclick='openProductForm(${JSON.stringify(p).replace(/'/g,"&#39;")})'>تعديل</button>
           <button class="btn btn-outline" style="padding:6px 14px;font-size:.78rem;" onclick="deleteProduct('${p.id}')">حذف</button>
@@ -414,10 +414,11 @@ function openProductForm(p) {
     <input type="text" id="pTitle" value="${isEdit ? p.title : ''}">
     <label>الوسم/القيمة (تظهر كشارة على البطاقة)</label>
     <input type="text" id="pTag" value="${isEdit ? (p.tag||'') : ''}">
-    <label class="required">السعر (ريال)</label>
+    <label class="required">السعر (ر.س)</label>
     <input type="number" id="pPrice" value="${isEdit ? p.price : 0}">
     <label>الوصف</label>
-    <textarea id="pDesc">${isEdit ? (p.description||'') : ''}</textarea>
+    <textarea id="pDesc" placeholder="اكتب كل نقطة في سطر منفصل — كل سطر سيظهر كنقطة مستقلة في الموقع">${isEdit ? (p.description||'') : ''}</textarea>
+    <p class="hint">مثال: اكتب "المجلة" بسطر، ثم "ملصقات" بسطر آخر، وهكذا — كل سطر يظهر كنقطة منفصلة لدى العميل.</p>
     <label>رقم واتساب خاص بهذا المنتج (اختياري)</label>
     <input type="text" id="pWhatsapp" value="${isEdit ? (p.whatsapp_number||'') : ''}" placeholder="مثال: 966500000000">
     <p class="hint">إن تُرك فارغاً، يُستخدم رقم واتساب المنصة العام من ملف الإعدادات.</p>
