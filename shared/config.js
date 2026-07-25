@@ -10,7 +10,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const DRIVE_UPLOAD_URL = 'https://script.google.com/macros/s/AKfycbzAD21lMHrvJ4UBubZDEEIyCCeES3-OsI9aBwBl6KrFlufnBKfRKUIaA_P88G9hUBPU/exec';
 
 // رقم واتساب المنصة (بدون + وبدون مسافات)
-const WHATSAPP_PHONE = '966500000000';
+const WHATSAPP_PHONE = '967778732472';
 
 // حسابات التحويل البنكي المعروضة بعد إنشاء الطلب (عدّل الاسم ورقم الحساب لكل واحد)
 const BANKS = [
