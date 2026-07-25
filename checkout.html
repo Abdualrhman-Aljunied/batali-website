@@ -7,54 +7,32 @@
 <link rel="stylesheet" href="shared/styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-.page-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 24px;background:var(--clr-paper);box-shadow:var(--shadow-soft);
-  position:sticky;top:0;z-index:20;
-}
-.page-header .brand{margin:0;}
-.back-link{
-  display:flex;align-items:center;gap:6px;font-weight:700;font-size:.9rem;
-  color:var(--clr-ink-soft);
-}
+.page-header{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--clr-paper);box-shadow:var(--shadow-soft);position:sticky;top:0;z-index:20;}
+.back-link{display:flex;align-items:center;gap:6px;font-weight:700;font-size:.9rem;color:var(--clr-ink-soft);}
 .back-link:hover{color:var(--clr-primary);}
 .page-footer{text-align:center;padding:26px 20px;color:var(--clr-ink-soft);font-size:.82rem;}
+html,body{overflow-x:hidden;max-width:100%;}
+input,select,textarea{max-width:100%;}
 
-.section-title-sm{font-size:1.05rem;font-weight:900;margin:26px 0 4px;color:var(--clr-primary);}
-.section-sub-sm{font-size:.82rem;color:var(--clr-ink-soft);margin-bottom:10px;}
+.progress-wrap{margin-bottom:22px;}
+.progress-label{font-size:.85rem;font-weight:800;color:var(--clr-primary);margin-bottom:8px;}
+.progress-bar{height:8px;border-radius:100px;background:var(--clr-cream);overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--clr-primary),var(--clr-primary-dark));border-radius:100px;transition:width .3s;}
 
-.phone-row input{width:100%;}
-
-.picker-field{
-  border:2px solid color-mix(in srgb, var(--clr-primary) 20%, transparent);
-  border-radius:12px;padding:12px 14px;background:var(--clr-cream);cursor:pointer;
-  display:flex;justify-content:space-between;align-items:center;font-size:.95rem;
-}
-.picker-field.placeholder{color:var(--clr-ink-soft);}
-.picker-panel{
-  display:none;position:relative;margin-top:8px;background:var(--clr-paper);
-  border-radius:12px;box-shadow:var(--shadow-soft);padding:10px;
-  grid-template-columns:repeat(4,1fr);gap:8px;
-}
-.picker-panel.open{display:grid;}
-.picker-panel.gender-panel{grid-template-columns:repeat(2,1fr);}
-.picker-option{
-  padding:10px 6px;border-radius:10px;text-align:center;font-size:.88rem;font-weight:700;
-  background:var(--clr-cream);color:var(--clr-ink);transition:background .2s, color .2s;
-}
-.picker-option:hover, .picker-option.selected{
-  background:var(--clr-primary);color:#fff;
-}
-
+.section-title-sm{font-size:1.05rem;font-weight:900;margin:22px 0 4px;color:var(--clr-primary);}
 .field-error{color:var(--clr-primary-dark);font-size:.78rem;margin-top:5px;display:none;}
 .field-error.show{display:block;}
-.product-summary{background:var(--clr-teal-light);border-radius:12px;padding:14px 16px;margin-bottom:6px;}
-.product-summary b{color:var(--clr-teal);}
 
-.photo-guide{
-  display:flex;gap:18px;align-items:flex-start;background:var(--clr-teal-light);
-  border-radius:14px;padding:14px;margin-top:8px;
-}
+.phone-row input{width:100%;}
+.picker-field{border:2px solid color-mix(in srgb, var(--clr-primary) 20%, transparent);border-radius:12px;padding:12px 14px;background:var(--clr-cream);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:.95rem;}
+.picker-field.placeholder{color:var(--clr-ink-soft);}
+.picker-panel{display:none;position:relative;margin-top:8px;background:var(--clr-paper);border-radius:12px;box-shadow:var(--shadow-soft);padding:10px;grid-template-columns:repeat(4,1fr);gap:8px;}
+.picker-panel.open{display:grid;}
+.picker-panel.gender-panel{grid-template-columns:repeat(2,1fr);}
+.picker-option{padding:10px 6px;border-radius:10px;text-align:center;font-size:.88rem;font-weight:700;background:var(--clr-cream);color:var(--clr-ink);transition:background .2s, color .2s;}
+.picker-option:hover, .picker-option.selected{background:var(--clr-primary);color:#fff;}
+
+.photo-guide{display:flex;gap:18px;align-items:flex-start;background:var(--clr-teal-light);border-radius:14px;padding:14px;margin-top:8px;}
 .photo-guide img{width:150px;height:150px;object-fit:cover;border-radius:12px;flex-shrink:0;cursor:pointer;transition:transform .2s;}
 .photo-guide img:hover{transform:scale(1.03);}
 .photo-guide .tips-cols{display:flex;gap:18px;flex:1;}
@@ -66,8 +44,16 @@
 
 .consent-row{display:flex;align-items:flex-start;gap:10px;margin-top:20px;background:var(--clr-cream);padding:14px;border-radius:12px;}
 .consent-row input{width:auto;margin-top:3px;accent-color:var(--clr-primary);}
-.consent-row label{margin:0;font-weight:500;font-size:.85rem;line-height:1.8;}html,body{overflow-x:hidden;max-width:100%;}
-input,select,textarea{max-width:100%;}
+.consent-row label{margin:0;font-weight:500;font-size:.85rem;line-height:1.8;}
+
+.wizard-nav{display:flex;gap:12px;margin-top:26px;}
+.wizard-nav .btn{flex:1;}
+
+.review-item{background:var(--clr-cream);border-radius:12px;padding:14px 16px;margin-bottom:10px;font-size:.87rem;line-height:1.9;}
+.review-item b{color:var(--clr-primary);}
+.edit-link{font-size:.78rem;color:var(--clr-teal);text-decoration:underline;cursor:pointer;}
+.price-row{display:flex;justify-content:space-between;font-size:.9rem;padding:5px 0;}
+.price-row.total{font-weight:900;font-size:1.1rem;color:var(--clr-primary);border-top:1px dashed color-mix(in srgb, var(--clr-ink) 15%, transparent);padding-top:10px;margin-top:6px;}
 
 @media(max-width:640px){
   .container{padding:14px;}
@@ -75,7 +61,6 @@ input,select,textarea{max-width:100%;}
   .photo-guide{flex-direction:column;align-items:center;text-align:center;}
   .photo-guide img{width:120px;height:120px;}
   .photo-guide .tips-cols{flex-direction:column;gap:6px;width:100%;text-align:right;}
-  .products-grid{grid-template-columns:1fr;}
   .picker-panel{grid-template-columns:repeat(3,1fr);}
 }
 </style>
@@ -83,7 +68,7 @@ input,select,textarea{max-width:100%;}
 <body>
 
 <div class="page-header">
-  <a href="index.html" class="brand"><img src="images/logo-icon.png" alt="بطلي" style="height:32px;"></a>
+  <a href="index.html" class="brand" style="margin:0;"><img src="images/logo-icon.png" alt="بطلي" style="height:32px;"></a>
   <a href="#" id="backBtn" class="back-link">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
     رجوع
@@ -92,161 +77,241 @@ input,select,textarea{max-width:100%;}
 
 <div class="container">
   <div class="card">
-    <h2 style="margin-bottom:4px;">إتمام الطلب</h2>
-    <div class="product-summary" id="productSummary">جاري تحميل بيانات المنتج...</div>
-
-    <form id="orderForm">
-
-      <div class="section-title-sm">بيانات ولي الأمر</div>
-      <label class="required">اسم ولي الأمر</label>
-      <input type="text" id="parentName" placeholder="الاسم الثلاثي أو الرباعي" required>
-
-      <label class="required">رقم جوال الواتساب</label>
-      <div class="phone-row">
-        <input type="tel" id="phone" placeholder="05xxxxxxxx" required inputmode="numeric">
-      </div>
-      <div id="phoneError" class="error-box" style="display:none;">الرجاء إدخال أرقام فقط، أعد إدخال الرقم بطريقة صحيحة.</div>
-
-      <label>البريد الإلكتروني (اختياري)</label>
-      <input type="email" id="email">
-
-      <label class="required">المدينة</label>
-      <input type="text" id="city" required>
-
-      <div class="section-title-sm">بيانات البطل (الطفل)</div>
-
-      <label class="required">اسم الطفل الكامل</label>
-      <input type="text" id="childName" required>
-
-      <label class="required">عمر الطفل</label>
-      <div class="picker-field placeholder" id="ageField" data-value="">اختر عمر الطفل</div>
-      <div class="picker-panel" id="agePanel"></div>
-      <div class="field-error" id="ageError">الرجاء اختيار عمر الطفل</div>
-
-      <label class="required">جنس الطفل</label>
-      <div class="picker-field placeholder" id="genderField" data-value="">اختر جنس الطفل</div>
-      <div class="picker-panel gender-panel" id="genderPanel">
-        <div class="picker-option" data-value="ولد">ولد</div>
-        <div class="picker-option" data-value="بنت">بنت</div>
-      </div>
-      <div class="field-error" id="genderError">الرجاء اختيار جنس الطفل</div>
-
-      <label>أي معلومة عن الطفل تحبون ذكرها في القصة</label>
-      <textarea id="childNote" placeholder="مثال: يحب كرة القدم، يخاف من الظلام..."></textarea>
-
-      <label class="required">صورة الطفل</label>
-      <input type="file" id="childPhotos" accept="image/*" multiple required>
-      <div class="photo-guide">
-        <div>
-          <img src="images/child-photo.png" alt="مثال على صورة مناسبة" onclick="openLightbox()">
-          <div class="cap">اضغط على الصورة لتكبيرها 🔍</div>
-        </div>
-        <div class="tips-cols">
-          <ul>
-            <li>صورة واضحة وحديثة للطفل</li>
-            <li>يُفضّل أن تكون من الأمام</li>
-            <li>للوجه كاملاً</li>
-          </ul>
-          <ul>
-            <li>إضاءة جيدة ودقة عالية</li>
-            <li>بدون نظارة شمسية أو قبعة</li>
-            <li>ليست بعيدة، ولا يوجد ما يخفي الوجه</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="section-title-sm">القيمة المراد غرسها في طفلك <span style="color:var(--clr-primary);">*</span></div>
-      <select id="storyValue" required>
-        <option value="">اختر القيمة...</option>
-      </select>
-      <div id="valueOtherWrap" style="display:none;">
-        <label>اكتب القيمة أو الهواية التي تريدها</label>
-        <input type="text" id="valueOther">
-        <div class="field-error" id="valueOtherError">الرجاء كتابة القيمة أو الهواية التي تريدها</div>
-      </div>
-
-      <div class="section-title-sm">الإهداء الذي يظهر داخل القصة <span style="color:var(--clr-primary);">*</span></div>
-      <select id="dedicationType" required>
-        <option value="">اختر...</option>
-        <option value="named">إهداء (باسم صاحب الإهداء)</option>
-        <option value="custom">اختيار آخر</option>
-      </select>
-      <div id="dedicationNamedWrap" style="display:none;">
-        <label>اسم صاحب الإهداء</label>
-        <input type="text" id="dedicationName">
-        <div class="field-error" id="dedicationNameError">الرجاء كتابة اسم صاحب الإهداء</div>
-      </div>
-      <div id="dedicationCustomWrap" style="display:none;">
-        <label>اكتب نص الإهداء الذي تريده</label>
-        <textarea id="dedicationCustom"></textarea>
-        <div class="field-error" id="dedicationCustomError">الرجاء كتابة نص الإهداء</div>
-      </div>
-
-      <label>هل هناك هواية أو تفصيلة تحب إضافتها لشخصية الطفل في القصة؟</label>
-      <textarea id="hobbyDetail" placeholder="مثال: يلبس نظارة، شعره مجعد..."></textarea>
-
-      <div class="consent-row">
-        <input type="checkbox" id="consentPrivacy" required>
-        <label for="consentPrivacy">أوافق على <a href="index.html#privacy" target="_blank" style="color:var(--clr-primary);text-decoration:underline;">سياسة الخصوصية</a> الخاصة بمنصة بطلي، وأؤكد أن الصورة المرفوعة هي لطفلي أو بإذن ولي أمره.</label>
-      </div>
-
-      <button type="submit" class="btn btn-block" id="submitBtn" style="margin-top:26px;">إرسال الطلب</button>
-      <div id="formMsg"></div>
-    </form>
+    <div class="progress-wrap">
+      <div class="progress-label" id="progressLabel">جاري التحميل...</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div>
+    </div>
+    <div id="stepContent"></div>
   </div>
 </div>
 
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <img src="images/child-photo.png" alt="مثال على صورة مناسبة">
-</div>
+<div class="lightbox" id="lightbox" onclick="closeLightbox()"><img src="images/child-photo.png" alt="مثال"></div>
 
-<div class="page-footer">
-  © 2026 منصة بطلي — <a href="index.html" style="text-decoration:underline;">العودة للصفحة الرئيسية</a>
-</div>
+<div class="page-footer">© 2026 منصة بطلي — <a href="index.html" style="text-decoration:underline;">العودة للصفحة الرئيسية</a></div>
 
 <script src="shared/config.js"></script>
 <script src="shared/drive-upload.js"></script>
 <script>
+document.getElementById('backBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  if (document.referrer) window.history.back(); else window.location.href = 'index.html';
+});
 function openLightbox(){ document.getElementById('lightbox').classList.add('open'); }
 function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
 
-document.getElementById('backBtn').addEventListener('click', (e) => {
-  e.preventDefault();
-  if (document.referrer) window.history.back();
-  else window.location.href = 'index.html';
-});
+/* ---------- الحالة العامة ---------- */
+const pendingItems = JSON.parse(localStorage.getItem('batali_pending_items') || '[]');
+const couponCode = localStorage.getItem('batali_coupon_code') || '';
+const stepContent = document.getElementById('stepContent');
+const progressLabel = document.getElementById('progressLabel');
+const progressFill = document.getElementById('progressFill');
 
-const ageField = document.getElementById('ageField');
-const agePanel = document.getElementById('agePanel');
-for (let age = 2; age <= 13; age++) {
-  const opt = document.createElement('div');
-  opt.className = 'picker-option';
-  opt.dataset.value = age;
-  opt.textContent = age + ' سنوات';
-  agePanel.appendChild(opt);
+// استرجاع تقدّم محفوظ سابقاً إن وُجد (نفس عدد المنتجات)
+const saved = JSON.parse(localStorage.getItem('batali_wizard_progress') || 'null');
+let parentInfo = (saved && saved.pendingItemsCount === pendingItems.length) ? saved.parentInfo : {};
+let itemsData = (saved && saved.pendingItemsCount === pendingItems.length) ? saved.itemsData : pendingItems.map(() => ({}));
+let currentStep = 0; // 0 = بيانات ولي الأمر، 1..N = عناصر، N+1 = مراجعة
+
+const TOTAL_STEPS = pendingItems.length + 2;
+
+function saveProgress(){
+  localStorage.setItem('batali_wizard_progress', JSON.stringify({ pendingItemsCount: pendingItems.length, parentInfo, itemsData }));
 }
-setupPicker(ageField, agePanel);
 
-const genderField = document.getElementById('genderField');
-const genderPanel = document.getElementById('genderPanel');
-setupPicker(genderField, genderPanel);
+function updateProgress(){
+  const pct = Math.round((currentStep / (TOTAL_STEPS - 1)) * 100);
+  progressFill.style.width = pct + '%';
+  if (currentStep === 0) progressLabel.textContent = 'بيانات ولي الأمر';
+  else if (currentStep <= pendingItems.length) progressLabel.textContent = `تخصيص المنتج ${currentStep} من ${pendingItems.length}`;
+  else progressLabel.textContent = 'مراجعة الطلب وإرسال';
+}
 
-function setupPicker(fieldEl, panelEl) {
+if (pendingItems.length === 0) {
+  stepContent.innerHTML = `<p style="text-align:center;color:var(--clr-ink-soft);padding:30px 0;">لا توجد منتجات لإتمام الطلب — الرجاء العودة للموقع واختيار قصة أولاً.</p>
+    <a href="index.html" class="btn btn-block">العودة للصفحة الرئيسية</a>`;
+  progressLabel.textContent = 'لا يوجد طلب';
+} else {
+  renderStep();
+}
+
+function renderStep(){
+  updateProgress();
+  if (currentStep === 0) renderParentStep();
+  else if (currentStep <= pendingItems.length) renderItemStep(currentStep - 1);
+  else renderReviewStep();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ---------- خطوة بيانات ولي الأمر ---------- */
+function renderParentStep(){
+  stepContent.innerHTML = `
+    <div class="section-title-sm">بيانات ولي الأمر</div>
+    <label class="required">اسم ولي الأمر</label>
+    <input type="text" id="parentName" placeholder="الاسم الثلاثي أو الرباعي" value="${parentInfo.parentName||''}">
+    <div class="field-error" id="err_parentName">الرجاء إدخال اسم ولي الأمر</div>
+
+    <label class="required">رقم جوال الواتساب</label>
+    <div class="phone-row"><input type="tel" id="phone" placeholder="05xxxxxxxx" inputmode="numeric" value="${parentInfo.phone||''}"></div>
+    <div class="field-error" id="err_phone">الرجاء إدخال رقم جوال صحيح (أرقام فقط)</div>
+
+    <label>البريد الإلكتروني (اختياري)</label>
+    <input type="email" id="email" value="${parentInfo.email||''}">
+
+    <label class="required">المدينة</label>
+    <input type="text" id="city" value="${parentInfo.city||''}">
+    <div class="field-error" id="err_city">الرجاء إدخال المدينة</div>
+
+    <div class="wizard-nav">
+      <button class="btn" id="nextBtn">التالي</button>
+    </div>
+  `;
+  const phoneInput = document.getElementById('phone');
+  phoneInput.addEventListener('input', () => { phoneInput.value = phoneInput.value.replace(/[^0-9]/g,''); });
+
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    const parentName = document.getElementById('parentName').value.trim();
+    const phone = phoneInput.value.trim();
+    const city = document.getElementById('city').value.trim();
+    let ok = true;
+    toggleErr('err_parentName', !parentName); if(!parentName) ok=false;
+    toggleErr('err_phone', phone.length < 8); if(phone.length < 8) ok=false;
+    toggleErr('err_city', !city); if(!city) ok=false;
+    if(!ok) return;
+    parentInfo = { parentName, phone, email: document.getElementById('email').value.trim(), city };
+    saveProgress();
+    currentStep++;
+    renderStep();
+  });
+}
+function toggleErr(id, cond){ document.getElementById(id).classList.toggle('show', cond); }
+
+/* ---------- خطوة تخصيص منتج ---------- */
+function renderItemStep(idx){
+  const pending = pendingItems[idx];
+  const data = itemsData[idx] || {};
+  stepContent.innerHTML = `
+    <div class="section-title-sm">تخصيص: ${pending.product_title} ${pending.copy_label||''}</div>
+
+    <label class="required">اسم الطفل الكامل</label>
+    <input type="text" id="childName" value="${data.childName||''}">
+    <div class="field-error" id="err_childName">الرجاء إدخال اسم الطفل</div>
+
+    <label class="required">عمر الطفل</label>
+    <div class="picker-field placeholder" id="ageField" data-value="${data.childAge||''}">${data.childAge ? data.childAge+' سنوات' : 'اختر عمر الطفل'}</div>
+    <div class="picker-panel" id="agePanel"></div>
+    <div class="field-error" id="err_age">الرجاء اختيار عمر الطفل</div>
+
+    <label class="required">جنس الطفل</label>
+    <div class="picker-field placeholder" id="genderField" data-value="${data.childGender||''}">${data.childGender || 'اختر جنس الطفل'}</div>
+    <div class="picker-panel gender-panel" id="genderPanel">
+      <div class="picker-option" data-value="ولد">ولد</div>
+      <div class="picker-option" data-value="بنت">بنت</div>
+    </div>
+    <div class="field-error" id="err_gender">الرجاء اختيار جنس الطفل</div>
+
+    <label>أي معلومة عن الطفل تحبون ذكرها في القصة</label>
+    <textarea id="childNote">${data.childNote||''}</textarea>
+
+    <label class="required">صورة الطفل</label>
+    <input type="file" id="childPhotos" accept="image/*" multiple>
+    <div class="field-error" id="err_photos">الرجاء رفع صورة واحدة على الأقل</div>
+    <div class="photo-guide">
+      <div><img src="images/child-photo.png" alt="مثال" onclick="openLightbox()"><div class="cap">اضغط على الصورة لتكبيرها 🔍</div></div>
+      <div class="tips-cols">
+        <ul><li>صورة واضحة وحديثة</li><li>من الأمام</li><li>للوجه كاملاً</li></ul>
+        <ul><li>إضاءة جيدة ودقة عالية</li><li>بدون نظارة شمسية أو قبعة</li><li>ليست بعيدة</li></ul>
+      </div>
+    </div>
+
+    <div class="section-title-sm">القيمة المراد غرسها في طفلك <span style="color:var(--clr-primary);">*</span></div>
+    <select id="storyValue"><option value="">اختر القيمة...</option></select>
+    <div class="field-error" id="err_value">الرجاء اختيار القيمة</div>
+    <div id="valueOtherWrap" style="display:none;">
+      <label>اكتب القيمة أو الهواية التي تريدها</label>
+      <input type="text" id="valueOther" value="${data.storyValueOther||''}">
+      <div class="field-error" id="err_valueOther">الرجاء كتابة القيمة</div>
+    </div>
+
+    <div class="section-title-sm">الإهداء الذي يظهر داخل القصة <span style="color:var(--clr-primary);">*</span></div>
+    <select id="dedicationType">
+      <option value="">اختر...</option>
+      <option value="named">إهداء (باسم صاحب الإهداء)</option>
+      <option value="custom">اختيار آخر</option>
+    </select>
+    <div class="field-error" id="err_dedication">الرجاء اختيار نوع الإهداء</div>
+    <div id="dedicationNamedWrap" style="display:none;">
+      <label>اسم صاحب الإهداء</label>
+      <input type="text" id="dedicationName" value="${data.dedicationName||''}">
+      <div class="field-error" id="err_dedicationName">الرجاء كتابة اسم صاحب الإهداء</div>
+    </div>
+    <div id="dedicationCustomWrap" style="display:none;">
+      <label>اكتب نص الإهداء الذي تريده</label>
+      <textarea id="dedicationCustom">${data.dedicationCustom||''}</textarea>
+      <div class="field-error" id="err_dedicationCustom">الرجاء كتابة نص الإهداء</div>
+    </div>
+
+    <label>هل هناك هواية أو تفصيلة تحب إضافتها لشخصية الطفل في القصة؟</label>
+    <textarea id="hobbyDetail">${data.hobbyDetail||''}</textarea>
+
+    <div class="wizard-nav">
+      <button class="btn btn-outline" id="prevBtn">السابق</button>
+      <button class="btn" id="nextBtn">التالي</button>
+    </div>
+  `;
+
+  // منتقي العمر
+  const ageField = document.getElementById('ageField');
+  const agePanel = document.getElementById('agePanel');
+  for (let age = 2; age <= 13; age++) {
+    const opt = document.createElement('div');
+    opt.className = 'picker-option'; opt.dataset.value = age; opt.textContent = age + ' سنوات';
+    if (data.childAge == age) opt.classList.add('selected');
+    agePanel.appendChild(opt);
+  }
+  setupPicker(ageField, agePanel, 'err_age');
+  const genderField = document.getElementById('genderField');
+  const genderPanel = document.getElementById('genderPanel');
+  if (data.childGender) genderPanel.querySelector(`[data-value="${data.childGender}"]`)?.classList.add('selected');
+  setupPicker(genderField, genderPanel, 'err_gender');
+
+  // القيم
+  const VALUES = ['الصدق','الأمانة','الشجاعة','بر الوالدين','التعاون','حسن الخلق','الصبر','الكرم','احترام الآخرين','تنظيم الوقت','تنمية المهارات','اختيار آخر'];
+  const storyValueEl = document.getElementById('storyValue');
+  VALUES.forEach(v => { const o=document.createElement('option'); o.value=v; o.textContent=v; if(data.storyValue===v) o.selected=true; storyValueEl.appendChild(o); });
+  document.getElementById('valueOtherWrap').style.display = storyValueEl.value === 'اختيار آخر' ? 'block' : 'none';
+  storyValueEl.addEventListener('change', () => {
+    document.getElementById('valueOtherWrap').style.display = storyValueEl.value === 'اختيار آخر' ? 'block' : 'none';
+    toggleErr('err_value', false);
+  });
+
+  const dedicationType = document.getElementById('dedicationType');
+  if (data.dedicationType) dedicationType.value = data.dedicationType;
+  document.getElementById('dedicationNamedWrap').style.display = dedicationType.value === 'named' ? 'block' : 'none';
+  document.getElementById('dedicationCustomWrap').style.display = dedicationType.value === 'custom' ? 'block' : 'none';
+  dedicationType.addEventListener('change', () => {
+    document.getElementById('dedicationNamedWrap').style.display = dedicationType.value === 'named' ? 'block' : 'none';
+    document.getElementById('dedicationCustomWrap').style.display = dedicationType.value === 'custom' ? 'block' : 'none';
+    toggleErr('err_dedication', false);
+  });
+
+  document.getElementById('prevBtn').addEventListener('click', () => { collectItemStep(idx, false); currentStep--; renderStep(); });
+  document.getElementById('nextBtn').addEventListener('click', () => { if (collectItemStep(idx, true)) { currentStep++; renderStep(); } });
+}
+
+function setupPicker(fieldEl, panelEl, errId){
   fieldEl.addEventListener('click', () => {
     document.querySelectorAll('.picker-panel.open').forEach(p => { if (p !== panelEl) p.classList.remove('open'); });
     panelEl.classList.toggle('open');
   });
   panelEl.addEventListener('click', (e) => {
-    const opt = e.target.closest('.picker-option');
-    if (!opt) return;
+    const opt = e.target.closest('.picker-option'); if (!opt) return;
     panelEl.querySelectorAll('.picker-option').forEach(o => o.classList.remove('selected'));
     opt.classList.add('selected');
     fieldEl.dataset.value = opt.dataset.value;
     fieldEl.textContent = opt.textContent;
     fieldEl.classList.remove('placeholder');
     panelEl.classList.remove('open');
-    const errEl = fieldEl.id === 'ageField' ? document.getElementById('ageError') : document.getElementById('genderError');
-    errEl.classList.remove('show');
+    toggleErr(errId, false);
   });
 }
 document.addEventListener('click', (e) => {
@@ -255,161 +320,200 @@ document.addEventListener('click', (e) => {
   }
 });
 
-const phoneInput = document.getElementById('phone');
-const phoneError = document.getElementById('phoneError');
-phoneInput.addEventListener('input', () => {
-  const cleaned = phoneInput.value.replace(/[^0-9]/g, '');
-  phoneError.style.display = (cleaned !== phoneInput.value) ? 'block' : 'none';
-  phoneInput.value = cleaned;
-});
+// يجمع بيانات خطوة العنصر الحالية؛ إن كان validate=true يتحقق من الإلزامي ويرجع false عند وجود خطأ
+function collectItemStep(idx, validate){
+  const ageField = document.getElementById('ageField');
+  const genderField = document.getElementById('genderField');
+  const storyValueEl = document.getElementById('storyValue');
+  const dedicationType = document.getElementById('dedicationType');
+  const childName = document.getElementById('childName').value.trim();
+  const photosInput = document.getElementById('childPhotos');
+  const existingPhotos = itemsData[idx].photoFiles;
 
-// المنتج يصل من السلة في الصفحة الرئيسية
-const cartItem = JSON.parse(localStorage.getItem('batali_checkout_item') || 'null');
-const summaryEl = document.getElementById('productSummary');
-if (cartItem) {
-  summaryEl.innerHTML = `المنتج المختار: <b>${cartItem.title}</b> — ${cartItem.price} ريال`;
-} else {
-  summaryEl.innerHTML = 'لم يتم تحديد منتج — الرجاء العودة للموقع واختيار قصة أولاً.';
-  document.getElementById('submitBtn').disabled = true;
+  let ok = true;
+  if (validate) {
+    toggleErr('err_childName', !childName); if(!childName) ok=false;
+    toggleErr('err_age', !ageField.dataset.value); if(!ageField.dataset.value) ok=false;
+    toggleErr('err_gender', !genderField.dataset.value); if(!genderField.dataset.value) ok=false;
+    const hasPhotos = (photosInput.files && photosInput.files.length>0) || (existingPhotos && existingPhotos.length>0);
+    toggleErr('err_photos', !hasPhotos); if(!hasPhotos) ok=false;
+    toggleErr('err_value', !storyValueEl.value); if(!storyValueEl.value) ok=false;
+    if (storyValueEl.value === 'اختيار آخر') {
+      const other = document.getElementById('valueOther').value.trim();
+      toggleErr('err_valueOther', !other); if(!other) ok=false;
+    }
+    toggleErr('err_dedication', !dedicationType.value); if(!dedicationType.value) ok=false;
+    if (dedicationType.value === 'named') {
+      const n = document.getElementById('dedicationName').value.trim();
+      toggleErr('err_dedicationName', !n); if(!n) ok=false;
+    }
+    if (dedicationType.value === 'custom') {
+      const c = document.getElementById('dedicationCustom').value.trim();
+      toggleErr('err_dedicationCustom', !c); if(!c) ok=false;
+    }
+    if (!ok) return false;
+  }
+
+  itemsData[idx] = {
+    childName,
+    childAge: ageField.dataset.value,
+    childGender: genderField.dataset.value,
+    childNote: document.getElementById('childNote').value.trim(),
+    storyValue: storyValueEl.value,
+    storyValueOther: document.getElementById('valueOther') ? document.getElementById('valueOther').value.trim() : '',
+    dedicationType: dedicationType.value,
+    dedicationName: document.getElementById('dedicationName') ? document.getElementById('dedicationName').value.trim() : '',
+    dedicationCustom: document.getElementById('dedicationCustom') ? document.getElementById('dedicationCustom').value.trim() : '',
+    hobbyDetail: document.getElementById('hobbyDetail').value.trim(),
+    photoFiles: (photosInput.files && photosInput.files.length>0) ? photosInput.files : existingPhotos,
+  };
+  saveProgress();
+  return true;
 }
 
-const VALUES = ['الصدق','الأمانة','الشجاعة','بر الوالدين','التعاون','حسن الخلق','الصبر','الكرم','احترام الآخرين','تنظيم الوقت','تنمية المهارات','اختيار آخر'];
-const storyValueEl = document.getElementById('storyValue');
-VALUES.forEach(v => {
-  const opt = document.createElement('option');
-  opt.value = v; opt.textContent = v;
-  storyValueEl.appendChild(opt);
-});
-storyValueEl.addEventListener('change', () => {
-  document.getElementById('valueOtherWrap').style.display = storyValueEl.value === 'اختيار آخر' ? 'block' : 'none';
-});
-document.getElementById('valueOther').addEventListener('input', () => {
-  document.getElementById('valueOtherError').classList.remove('show');
-});
+/* ---------- خطوة المراجعة والإرسال ---------- */
+function renderReviewStep(){
+  const subtotal = pendingItems.reduce((s,p)=>s+p.product_price, 0);
+  let discount = 0;
 
-const dedicationType = document.getElementById('dedicationType');
-dedicationType.addEventListener('change', () => {
-  document.getElementById('dedicationNamedWrap').style.display = dedicationType.value === 'named' ? 'block' : 'none';
-  document.getElementById('dedicationCustomWrap').style.display = dedicationType.value === 'custom' ? 'block' : 'none';
-});
-document.getElementById('dedicationName').addEventListener('input', () => {
-  document.getElementById('dedicationNameError').classList.remove('show');
-});
-document.getElementById('dedicationCustom').addEventListener('input', () => {
-  document.getElementById('dedicationCustomError').classList.remove('show');
-});
+  const itemsHtml = pendingItems.map((p, i) => {
+    const d = itemsData[i];
+    const valueLabel = d.storyValue === 'اختيار آخر' ? d.storyValueOther : d.storyValue;
+    const dedicationLabel = d.dedicationType === 'named' ? `باسم: ${d.dedicationName}` : d.dedicationCustom;
+    return `<div class="review-item">
+      <div style="display:flex;justify-content:space-between;"><b>${p.product_title} ${p.copy_label||''}</b><span class="edit-link" onclick="editItem(${i})">تعديل</span></div>
+      الطفل: ${d.childName} — ${d.childAge} سنوات — ${d.childGender}<br>
+      القيمة: ${valueLabel} | الإهداء: ${dedicationLabel}<br>
+      الصور: ${d.photoFiles ? d.photoFiles.length : 0} صورة
+    </div>`;
+  }).join('');
 
-const form = document.getElementById('orderForm');
-const submitBtn = document.getElementById('submitBtn');
-const msgEl = document.getElementById('formMsg');
+  stepContent.innerHTML = `
+    <div class="section-title-sm">مراجعة الطلب</div>
+    <div class="review-item"><b>ولي الأمر:</b> ${parentInfo.parentName} — ${parentInfo.phone} — ${parentInfo.city}</div>
+    ${itemsHtml}
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  msgEl.innerHTML = '';
+    <div id="couponBox" style="margin:16px 0;">
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="couponInput" placeholder="كود الخصم (إن وجد)" value="${couponCode}">
+        <button type="button" class="btn-ghost" id="applyCouponBtn" style="padding:10px 18px;white-space:nowrap;">تطبيق</button>
+      </div>
+      <div id="couponMsg" style="font-size:.8rem;margin-top:6px;"></div>
+    </div>
 
-  let hasError = false;
-  const toggleError = (elId, condition) => {
-    const el = document.getElementById(elId);
-    el.classList.toggle('show', condition);
-    if (condition) hasError = true;
-  };
+    <div class="price-row"><span>السعر الأساسي</span><span id="priceSubtotal">${subtotal} ريال</span></div>
+    <div class="price-row" id="discountRow" style="display:none;color:var(--clr-teal);"><span>الخصم</span><span id="priceDiscount">0 ريال</span></div>
+    <div class="price-row total"><span>الإجمالي</span><span id="priceTotal">${subtotal} ريال</span></div>
 
-  toggleError('ageError', !ageField.dataset.value);
-  toggleError('genderError', !genderField.dataset.value);
-  toggleError('valueOtherError', storyValueEl.value === 'اختيار آخر' && !document.getElementById('valueOther').value.trim());
-  toggleError('dedicationNameError', dedicationType.value === 'named' && !document.getElementById('dedicationName').value.trim());
-  toggleError('dedicationCustomError', dedicationType.value === 'custom' && !document.getElementById('dedicationCustom').value.trim());
+    <div class="consent-row">
+      <input type="checkbox" id="consentPrivacy">
+      <label for="consentPrivacy">أوافق على <a href="index.html#privacy" target="_blank" style="color:var(--clr-primary);text-decoration:underline;">سياسة الخصوصية</a> الخاصة بمنصة بطلي، وأؤكد أن الصور المرفوعة هي لطفلي أو بإذن ولي أمره.</label>
+    </div>
+    <div class="field-error" id="err_consent">الموافقة على سياسة الخصوصية إلزامية لإتمام الطلب</div>
 
-  if (hasError) return;
+    <div class="wizard-nav">
+      <button class="btn btn-outline" id="prevBtn">السابق</button>
+      <button class="btn" id="submitBtn">إرسال الطلب</button>
+    </div>
+    <div id="formMsg"></div>
+  `;
 
+  let currentDiscount = 0;
+  let currentCouponCode = '';
+
+  async function applyCoupon(){
+    const code = document.getElementById('couponInput').value.trim();
+    const msgEl = document.getElementById('couponMsg');
+    if(!code){ return; }
+    msgEl.style.color = 'var(--clr-ink-soft)'; msgEl.textContent = 'جاري التحقق...';
+    const { data, error } = await supabaseClient.rpc('check_coupon', { p_code: code });
+    const result = data && data[0];
+    if (error || !result || !result.valid) {
+      currentDiscount = 0; currentCouponCode = '';
+      msgEl.style.color = 'var(--clr-primary)'; msgEl.textContent = (result && result.message) || 'تعذّر التحقق من الكوبون';
+    } else {
+      currentDiscount = result.discount_type === 'percent' ? Math.round(subtotal * result.discount_value/100) : Math.min(result.discount_value, subtotal);
+      currentCouponCode = code;
+      msgEl.style.color = 'var(--clr-teal)'; msgEl.textContent = result.message;
+    }
+    document.getElementById('discountRow').style.display = currentDiscount>0 ? 'flex':'none';
+    document.getElementById('priceDiscount').textContent = '−'+currentDiscount+' ريال';
+    document.getElementById('priceTotal').textContent = (subtotal-currentDiscount)+' ريال';
+  }
+  document.getElementById('applyCouponBtn').addEventListener('click', applyCoupon);
+  if (couponCode) applyCoupon();
+
+  document.getElementById('prevBtn').addEventListener('click', () => { currentStep--; renderStep(); });
+  document.getElementById('submitBtn').addEventListener('click', () => submitOrder(subtotal, () => currentDiscount, () => currentCouponCode));
+}
+
+window.editItem = function(i){ currentStep = i + 1; renderStep(); };
+
+/* ---------- الإرسال النهائي ---------- */
+async function submitOrder(subtotal, getDiscount, getCouponCode){
+  const consentEl = document.getElementById('consentPrivacy');
+  if (!consentEl.checked) { toggleErr('err_consent', true); return; }
+  toggleErr('err_consent', false);
+
+  const submitBtn = document.getElementById('submitBtn');
+  const msgEl = document.getElementById('formMsg');
   submitBtn.disabled = true;
-  submitBtn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
+  submitBtn.innerHTML = '<span class="spinner"></span> جاري إنشاء الطلب...';
 
-  let createdOrder = null; // لتفادي إنشاء طلب مكرر إذا فشلت خطوة رفع الصور فقط
-  let step = 'create_order';
+  const discount = getDiscount();
+  const total = subtotal - discount;
+  let createdRows = null;
 
   try {
-    const fullPhone = phoneInput.value;
-    const dedicationText = dedicationType.value === 'named'
-      ? document.getElementById('dedicationName').value.trim()
-      : document.getElementById('dedicationCustom').value.trim();
-    const storyValueFinal = storyValueEl.value === 'اختيار آخر'
-      ? document.getElementById('valueOther').value.trim()
-      : storyValueEl.value;
-
-    const { data: orderRows, error: insertError } = await supabaseClient.rpc('create_order', {
-      p_parent_name: document.getElementById('parentName').value.trim(),
-      p_phone: fullPhone,
-      p_email: document.getElementById('email').value.trim(),
-      p_city: document.getElementById('city').value.trim(),
-      p_child_name: document.getElementById('childName').value.trim(),
-      p_child_age: ageField.dataset.value,
-      p_child_gender: genderField.dataset.value,
-      p_child_note: document.getElementById('childNote').value.trim(),
-      p_product_title: cartItem.title,
-      p_product_price: cartItem.price,
-      p_story_value: storyValueFinal,
-      p_dedication_type: dedicationType.value,
-      p_dedication_text: dedicationText,
-      p_hobby_detail: document.getElementById('hobbyDetail').value.trim(),
-      p_consent_privacy: document.getElementById('consentPrivacy').checked,
+    const itemsPayload = pendingItems.map((p, i) => {
+      const d = itemsData[i];
+      return {
+        item_index: p.item_index,
+        product_id: p.product_id,
+        product_title: p.product_title,
+        product_price: p.product_price,
+        child_name: d.childName, child_age: d.childAge, child_gender: d.childGender, child_note: d.childNote,
+        story_value: d.storyValue === 'اختيار آخر' ? d.storyValueOther : d.storyValue,
+        dedication_type: d.dedicationType,
+        dedication_text: d.dedicationType === 'named' ? d.dedicationName : d.dedicationCustom,
+        hobby_detail: d.hobbyDetail,
+        consent_privacy: true,
+      };
     });
 
-    if (insertError) throw insertError;
-    createdOrder = orderRows[0];
+    const { data, error } = await supabaseClient.rpc('create_full_order', {
+      p_parent_name: parentInfo.parentName, p_phone: parentInfo.phone, p_email: parentInfo.email, p_city: parentInfo.city,
+      p_coupon_code: getCouponCode() || null, p_subtotal: subtotal, p_discount_amount: discount, p_total: total,
+      p_items: itemsPayload,
+    });
+    if (error) throw error;
+    createdRows = data;
 
-    step = 'upload_photos';
     submitBtn.innerHTML = '<span class="spinner"></span> جاري رفع الصور...';
-    const photoFiles = document.getElementById('childPhotos').files;
-    const photoUrls = photoFiles.length ? await uploadMultipleToDrive(photoFiles, createdOrder.order_number) : [];
+    for (const row of createdRows) {
+      const itemIdx = pendingItems.findIndex(p => p.item_index === row.item_index);
+      const files = itemsData[itemIdx].photoFiles;
+      if (files && files.length) {
+        const urls = await uploadMultipleToDrive(files, row.order_number + '-' + row.item_index);
+        await supabaseClient.rpc('add_item_photos', { p_item_id: row.item_id, p_photo_urls: urls });
+      }
+    }
 
-    step = 'save_files';
-    const { error: updateError } = await supabaseClient.rpc('add_order_files', {
-      p_order_id: createdOrder.id,
-      p_photo_urls: photoUrls,
-      p_voice_url: null,
-    });
-    if (updateError) throw updateError;
-
-    window.location.href = `order-success.html?order=${createdOrder.order_number}&amount=${cartItem.price}`;
+    localStorage.removeItem('batali_pending_items');
+    localStorage.removeItem('batali_coupon_code');
+    localStorage.removeItem('batali_wizard_progress');
+    window.location.href = `order-success.html?order=${createdRows[0].order_number}&amount=${total}`;
 
   } catch (err) {
-    let friendly = '';
-    if (step === 'create_order') {
-      friendly = `تعذّر إنشاء الطلب في قاعدة البيانات. (${err.message || 'Failed to fetch'})`;
-    } else if (step === 'upload_photos') {
-      friendly = `تم إنشاء طلبك برقم <b>${createdOrder.order_number}</b> بنجاح، لكن تعذّر رفع الصور إلى Google Drive. (${err.message || 'Failed to fetch'})
-      <br>هذا غالباً بسبب رابط Apps Script غير صحيح أو غير منشور بصلاحية "Anyone". احفظ رقم الطلب وأرسل الصور لاحقاً، أو أعد المحاولة.`;
+    if (createdRows) {
+      msgEl.innerHTML = `<div class="error-box">تم إنشاء طلبك برقم <b>${createdRows[0].order_number}</b> لكن حدث خطأ أثناء رفع بعض الصور (${err.message}). احفظ رقم الطلب وتواصل معنا.</div>`;
     } else {
-      friendly = `تم إنشاء طلبك ورفع الصور، لكن تعذّر حفظ روابطها بالطلب. (${err.message || 'Failed to fetch'})
-      <br>رقم طلبك: <b>${createdOrder.order_number}</b> — تواصل معنا بهذا الرقم.`;
+      msgEl.innerHTML = `<div class="error-box">تعذّر إنشاء الطلب: ${err.message}. حاول مرة أخرى.</div>`;
     }
-    msgEl.innerHTML = `<div class="error-box">${friendly}</div>`;
     submitBtn.disabled = false;
-    submitBtn.textContent = createdOrder ? 'إعادة محاولة رفع الصور' : 'إرسال الطلب';
-
-    // إذا كان الطلب أُنشئ بالفعل، أعد المحاولة من رفع الصور فقط (لا تكرار للطلب)
-    if (createdOrder) {
-      form.onsubmit = async (e2) => {
-        e2.preventDefault();
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner"></span> جاري رفع الصور...';
-        try {
-          const photoFiles = document.getElementById('childPhotos').files;
-          const photoUrls = photoFiles.length ? await uploadMultipleToDrive(photoFiles, createdOrder.order_number) : [];
-          const { error: updateError } = await supabaseClient.rpc('add_order_files', {
-            p_order_id: createdOrder.id, p_photo_urls: photoUrls, p_voice_url: null,
-          });
-          if (updateError) throw updateError;
-          window.location.href = `order-success.html?order=${createdOrder.order_number}&amount=${cartItem.price}`;
-        } catch (err2) {
-          msgEl.innerHTML = `<div class="error-box">لا زال الرفع يفشل: ${err2.message}. رقم طلبك المحفوظ: <b>${createdOrder.order_number}</b></div>`;
-          submitBtn.disabled = false;
-        }
-      };
-    }
+    submitBtn.textContent = 'إرسال الطلب';
   }
-});
+}
 </script>
 </body>
 </html>
