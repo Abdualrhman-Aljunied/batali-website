@@ -15,7 +15,7 @@ const WHATSAPP_PHONE = '966500000000';
 // حسابات التحويل البنكي المعروضة بعد إنشاء الطلب (عدّل الاسم ورقم الحساب لكل واحد)
 const BANKS = [
   { name: 'العمقي للصرافة', accountName: 'عبدالرحمن منير صالح الجنيد', accountNumber: '254169670', color: '#1a9a6a', logo: './images/bank-amaqi.png' },
-  { name: 'البسيري للصرافة', accountName: 'عبدالرحمن منير صالح الجنيد', accountNumber: '23257868', color: '#2A6FB0', logo: 'images/bank-bassiri.png' },
+  { name: 'البسيري للصرافة', accountName: 'عبدالرحمن منير صالح الجنيد', accountNumber: '23257868', color: '#2A6FB0', logo: './images/bank-bassir.png' },
 ];
 
 // ============================================================
