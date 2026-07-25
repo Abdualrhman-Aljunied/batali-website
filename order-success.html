@@ -32,11 +32,11 @@
   border-radius:14px;padding:14px 16px;margin-bottom:12px;text-align:right;
 }
 .bank-logo{
-  width:52px;height:52px;border-radius:12px;background:var(--bank-color, var(--clr-primary));
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;
+  width:56px;height:56px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
 }
 .bank-logo img{width:100%;height:100%;object-fit:contain;}
-.bank-logo span{color:#fff;font-weight:900;font-size:1.1rem;}
+.bank-logo span{color:var(--bank-color, var(--clr-primary));font-weight:900;font-size:1.4rem;}
 .bank-info{flex:1;font-size:.86rem;line-height:1.9;}
 .bank-info b{color:var(--bank-color, var(--clr-primary));}
 .copy-account-btn{
@@ -101,8 +101,10 @@ document.getElementById('backBtn').addEventListener('click', (e) => {
 
 const params = new URLSearchParams(location.search);
 const orderNumber = params.get('order');
+const amount = params.get('amount');
 document.getElementById('orderNumberDisplay').textContent = orderNumber || '—';
 document.getElementById('trackLink').href = `track.html?order=${orderNumber}`;
+document.getElementById('amountDue').textContent = amount ? amount + ' ريال' : 'يُحدَّد لاحقاً';
 
 /* نسخ رقم الطلب بالضغط عليه */
 document.getElementById('orderNumberBox').addEventListener('click', () => {
@@ -137,15 +139,6 @@ function copyAccount(number, btn) {
   });
 }
 
-/* عرض المبلغ المطلوب من بيانات الطلب */
-(async () => {
-  const { data } = await supabaseClient
-    .from('order_public_status')
-    .select('product_price')
-    .eq('order_number', orderNumber)
-    .single();
-  if (data) document.getElementById('amountDue').textContent = data.product_price + ' ريال';
-})();
 
 const form = document.getElementById('receiptForm');
 const btn = document.getElementById('receiptBtn');
