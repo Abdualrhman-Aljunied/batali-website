@@ -25,6 +25,7 @@ async function uploadFileToDrive(file, orderNumber) {
 const data = await res.json();
 if (!data.success) throw new Error(data.error || 'فشل رفع الملف');
 return data.url;
+}
 
 // تصغير الصور الكبيرة قبل الرفع (يحل مشاكل فشل الرفع بسبب حجم الصورة، ويسرّع الرفع كثيراً)
 function compressImage(file, maxDimension = 1600, quality = 0.82) {
