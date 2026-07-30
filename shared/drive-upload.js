@@ -24,17 +24,7 @@ async function uploadFileToDrive(file, orderNumber) {
   }
 const data = await res.json();
 if (!data.success) throw new Error(data.error || 'فشل رفع الملف');
-
-// تحويل أي رابط مشاركة في Google Drive إلى رابط صورة مباشر
-let imageUrl = data.url;
-
-const match = imageUrl.match(/\/d\/([^/]+)/) || imageUrl.match(/[?&]id=([^&]+)/);
-
-if (match) {
-  imageUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
-}
-
-return imageUrl;
+return data.url;
 
 // تصغير الصور الكبيرة قبل الرفع (يحل مشاكل فشل الرفع بسبب حجم الصورة، ويسرّع الرفع كثيراً)
 function compressImage(file, maxDimension = 1600, quality = 0.82) {
