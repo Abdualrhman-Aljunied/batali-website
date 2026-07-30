@@ -106,7 +106,8 @@ nav a:hover::after{width:100%;}
   font-weight:700;font-size:1.05rem;
 }
 .mobile-nav-overlay.open .mobile-nav{transform:translateX(0);}
-.mobile-nav a{color:var(--clr-ink);}
+.mobile-nav a{color:var(--clr-ink);display:flex;align-items:center;gap:14px;}
+.mobile-nav a svg{width:22px;height:22px;flex-shrink:0;stroke:var(--clr-primary);}
 .mobile-nav a:hover{color:var(--clr-primary);}
 
 /* ---------- HERO ---------- */
@@ -166,7 +167,7 @@ nav a:hover::after{width:100%;}
 }
 .btn-ghost:hover{border-color:var(--clr-primary);background:color-mix(in srgb, var(--clr-primary) 8%, transparent);}
 
-/* hero illustration: exact template of the real printed story cover — only the name changes */
+/* hero illustration: redesigned to match the real printed cover artwork — only the name changes */
 .hero-visual{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
 .book-cover{
   width:290px;height:410px;border-radius:14px;position:relative;overflow:hidden;
@@ -177,59 +178,57 @@ nav a:hover::after{width:100%;}
 }
 @keyframes floatCover{0%,100%{transform:rotate(-3deg) translateY(0);}50%{transform:rotate(-1.5deg) translateY(-12px);}}
 
+.cover-mask{position:absolute;top:0;left:0;width:100%;height:110px;z-index:4;display:block;}
+.cover-mask path{fill:#FFFDF9;}
+.cover-mask-logo{position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:5;height:54px;width:auto;max-width:70%;object-fit:contain;}
+
+.cover-deco{position:absolute;z-index:3;opacity:.8;pointer-events:none;}
+.cover-deco svg{display:block;stroke:var(--clr-secondary-light);}
+
+.cover-stars{position:absolute;top:150px;inset-inline-start:22px;z-index:3;display:flex;flex-direction:column;gap:10px;}
+.cover-stars svg{width:13px;height:13px;fill:#fff;opacity:.9;}
+.cover-stars svg:nth-child(2){width:9px;height:9px;fill:var(--clr-secondary);margin-inline-start:4px;}
+.cover-stars svg:nth-child(3){width:11px;height:11px;fill:#fff;opacity:.7;margin-inline-start:10px;}
+
+.cover-pendant{position:absolute;top:120px;inset-inline-end:38px;z-index:3;display:flex;flex-direction:column;align-items:center;}
+.cover-pendant .string{width:2px;height:24px;background:rgba(255,253,249,.55);}
+.cover-pendant svg{width:16px;height:16px;fill:var(--clr-secondary);margin-top:-1px;}
+
+.cover-text{position:absolute;top:122px;inset-inline-end:22px;z-index:3;max-width:80%;text-align:right;}
+.cover-name{
+  color:var(--clr-secondary-light);font-weight:900;font-size:2rem;line-height:1.15;
+  word-break:break-word;min-height:1.2em;
+}
+.cover-subtitle{color:#fff;opacity:.9;font-weight:800;font-size:1.02rem;margin-top:4px;}
+
 .cover-sun{
   position:absolute;left:50%;bottom:-30px;transform:translateX(-50%);
-  width:230px;height:230px;border-radius:50%;
+  width:250px;height:250px;border-radius:50%;
   background:radial-gradient(circle at 40% 35%, #FFE9C2, #F5B15C 75%);
 }
-.cover-cloud{position:absolute;bottom:0;border-radius:50%;background:var(--clr-cream);opacity:.95;}
+.cover-cloud{position:absolute;bottom:0;border-radius:50%;background:#8A3B1D;opacity:.55;}
 .cover-cloud.c1{width:170px;height:70px;left:-30px;bottom:-10px;}
 .cover-cloud.c2{width:150px;height:60px;right:-35px;bottom:-6px;}
 .cover-cloud.c3{width:210px;height:90px;left:30px;bottom:-30px;}
 
-.cover-logo{
-  position:absolute;top:16px;inset-inline-end:16px;z-index:3;
-  display:flex;align-items:center;gap:5px;color:#fff;font-weight:900;font-size:.92rem;
-}
-.cover-logo svg{width:24px;height:24px;}
-
-.cover-stars{position:absolute;top:78px;inset-inline-start:24px;z-index:3;display:flex;gap:8px;align-items:flex-end;}
-.cover-stars svg{width:16px;height:16px;}
-.cover-stars svg:nth-child(1){width:20px;height:20px;fill:#fff;}
-.cover-stars svg:nth-child(2){fill:var(--clr-secondary);}
-
-.cover-text{position:absolute;top:100px;inset-inline-start:24px;z-index:3;max-width:78%;}
-.cover-name{
-  color:#fff;font-weight:900;font-size:2rem;line-height:1.15;
-  word-break:break-word;min-height:1.2em;
-}
-.cover-subtitle{color:var(--clr-secondary-light);font-weight:800;font-size:1.02rem;margin-top:4px;}
-
 .cover-child{
-  position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:3;
-  width:190px;height:auto;filter:drop-shadow(0 10px 16px rgba(0,0,0,.18));
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);z-index:3;
+  width:225px;height:auto;filter:drop-shadow(0 10px 16px rgba(0,0,0,.18));
 }
 .cover-child-photo{
-  position:absolute;bottom:-15px;left:50%;transform:translateX(-50%);z-index:3;
-  width:260px;height:260px;object-fit:contain;object-position:bottom;
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);z-index:3;
+  width:92%;max-height:300px;object-fit:contain;object-position:bottom;
   filter:drop-shadow(0 12px 18px rgba(0,0,0,.25));
   display:none;
 }
 .photo-hint{
-  position:absolute;bottom:172px;inset-inline-end:14px;z-index:4;
+  position:absolute;top:122px;inset-inline-start:22px;z-index:4;
   background:rgba(30,18,12,.6);color:#fff;font-size:.6rem;font-weight:700;
   padding:5px 10px;border-radius:100px;backdrop-filter:blur(3px);
   display:flex;align-items:center;gap:5px;
 }
 .photo-hint svg{width:11px;height:11px;flex-shrink:0;}
 
-.cover-badge{
-  position:absolute;bottom:16px;inset-inline-start:16px;z-index:4;
-  width:70px;height:70px;border-radius:50%;background:var(--clr-secondary);
-  display:flex;align-items:center;justify-content:center;text-align:center;
-  font-size:.66rem;font-weight:900;color:var(--clr-ink);line-height:1.35;
-  box-shadow:0 8px 18px rgba(0,0,0,.18);transform:rotate(-8deg);
-}
 .template-note{
   display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:700;
   color:var(--clr-ink-soft);background:var(--clr-paper);padding:8px 16px;
@@ -502,13 +501,18 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
   .step-card h3{font-size:.95rem;margin-bottom:6px;}
   .step-card p{font-size:.8rem;line-height:1.6;}
   .book-cover{width:220px;height:295px;}
-  .cover-sun{width:175px;height:175px;}
+  .cover-mask{height:82px;}
+  .cover-mask-logo{height:42px;top:12px;}
+  .cover-sun{width:190px;height:190px;}
+  .cover-stars{top:108px;inset-inline-start:16px;}
+  .cover-pendant{top:86px;inset-inline-end:26px;}
+  .cover-pendant .string{height:18px;}
   .cover-name{font-size:1.4rem;}
   .cover-subtitle{font-size:.8rem;}
-  .cover-child{width:140px;}
-  .cover-child-photo{width:195px;height:175px;bottom:-25px}
-  .photo-hint{bottom:120px;font-size:.54rem;padding:4px 8px;}
-  .cover-badge{width:54px;height:54px;font-size:.56rem;}
+  .cover-text{top:88px;inset-inline-end:16px;}
+  .cover-child{width:170px;}
+  .cover-child-photo{width:92%;max-height:220px;}
+  .photo-hint{top:88px;inset-inline-start:16px;font-size:.54rem;padding:4px 8px;}
 }
 @media(max-width:480px){
   .steps-grid{grid-template-columns:1fr;}
@@ -551,10 +555,22 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
 <!-- قائمة الجوال المنبثقة -->
 <div class="mobile-nav-overlay" id="mobileNavOverlay">
   <nav class="mobile-nav">
-    <a href="#steps">طريقة الطلب</a>
-    <a href="#products">المنتجات</a>
-    <a href="#" id="privacyLinkMobile">سياسة الخصوصية والاسترجاع</a>
-    <a href="https://wa.me/967778732472" target="_blank" rel="noopener">واتساب</a>
+    <a href="#steps">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      طريقة الطلب
+    </a>
+    <a href="#products">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      المنتجات
+    </a>
+    <a href="#" id="privacyLinkMobile">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      سياسة الخصوصية والاسترجاع
+    </a>
+    <a href="https://wa.me/967778732472" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      واتساب
+    </a>
   </nav>
 </div>
 
@@ -582,25 +598,42 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
         <div class="cover-cloud c1"></div>
         <div class="cover-cloud c2"></div>
 
-        <!-- من اليمين: اللوقو + الاسم فقط -->
-        <div class="cover-logo">
-         <img src="images/logo-icon2.png" alt="بطلي" style="height:175px;width:auto;object-fit:contain;margin:-45px 0 0;">
+        <!-- الغلاف العلوي الأبيض + اللوقو والاسم فقط في الوسط -->
+        <svg class="cover-mask" viewBox="0 0 290 110" preserveAspectRatio="none">
+          <path d="M0,0 H290 V22 C210,70 80,70 0,22 Z"/>
+        </svg>
+        <img class="cover-mask-logo" src="images/logo-icon2.png" alt="بطلي">
+
+        <!-- زخارف صغيرة -->
+        <div class="cover-deco" style="top:20px;inset-inline-start:26px;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 16 C4 10 8 6 14 5" stroke-width="2.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="cover-deco" style="top:96px;inset-inline-end:20px;">
+          <svg width="22" height="22" viewBox="0 0 22 22"><path d="M15 4 C10 6 7 11 9 16 C11 20 17 21 20 18 C15 19 11 14 15 4Z" fill="var(--clr-secondary-light)"/></svg>
         </div>
 
         <div class="cover-stars">
           <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.7 7-6.3-3.8-6.3 3.8 1.7-7L2 9.2l7.1-.6L12 2z"/></svg>
           <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.7 7-6.3-3.8-6.3 3.8 1.7-7L2 9.2l7.1-.6L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.7 7-6.3-3.8-6.3 3.8 1.7-7L2 9.2l7.1-.6L12 2z"/></svg>
         </div>
 
-        <!-- الوسط: اسم الطفل + عنوان القصة -->
+        <!-- نجمة معلّقة بجانب الاسم -->
+        <div class="cover-pendant">
+          <div class="string"></div>
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.7 7-6.3-3.8-6.3 3.8 1.7-7L2 9.2l7.1-.6L12 2z"/></svg>
+        </div>
+
+        <!-- اسم الطفل + عنوان القصة -->
         <div class="cover-text">
           <div class="cover-name" id="coverName">اسم طفلك</div>
           <div class="cover-subtitle" id="coverStory">بطل هذه القصة</div>
         </div>
 
-        <!-- صورة الطفل الحقيقية (بخلفية شفافة). ضعها هنا باسم images/child-photo.png
-             وستظهر تلقائياً فوق الرسمة التوضيحية لإثبات أن القالب حقيقي -->
-        <img class="cover-child-photo" id="childPhoto" src="images/child-photo.png" alt="صورة الطفل"
+        <!-- صورة الطفل الحقيقية (بخلفية شفافة). ضعها هنا باسم images/child-photo.webp
+             وستظهر تلقائياً فوق الرسمة التوضيحية لإثبات أن القالب حقيقي.
+             مهم: استخدم WebP مضغوطاً (لا تزيد المساحة عن ~100 كيلوبايت) حتى تبقى سرعة التحميل ممتازة. -->
+        <img class="cover-child-photo" id="childPhoto" src="images/child-photo.webp" alt="صورة الطفل"
              decoding="async" fetchpriority="high"
              onload="this.style.display='block'; document.getElementById('childIllustration').style.display='none'; document.getElementById('photoHint').style.display='none';"
              onerror="this.style.display='none';">
@@ -697,8 +730,6 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.2"/></svg>
           <span>هنا تظهر صورة طفلك الحقيقية</span>
         </div>
-
-        <div class="cover-badge">قصة<br>مُلهمة</div>
       </div>
 
       <div class="template-note">
