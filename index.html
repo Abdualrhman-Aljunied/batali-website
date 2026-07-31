@@ -185,16 +185,16 @@ nav a:hover::after{width:100%;}
 .cover-deco{position:absolute;z-index:3;opacity:.8;pointer-events:none;}
 .cover-deco svg{display:block;stroke:var(--clr-secondary-light);}
 
-.cover-stars{position:absolute;top:150px;inset-inline-start:22px;z-index:3;display:flex;flex-direction:column;gap:10px;}
+.cover-stars{position:absolute;top:165px;inset-inline-end:40px;z-index:3;display:flex;flex-direction:column;gap:10px;}
 .cover-stars svg{width:13px;height:13px;fill:#fff;opacity:.9;}
 .cover-stars svg:nth-child(2){width:9px;height:9px;fill:var(--clr-secondary);margin-inline-start:4px;}
 .cover-stars svg:nth-child(3){width:11px;height:11px;fill:#fff;opacity:.7;margin-inline-start:10px;}
 
-.cover-pendant{position:absolute;top:120px;inset-inline-end:38px;z-index:3;display:flex;flex-direction:column;align-items:center;}
+.cover-pendant{position:absolute;top:167px;inset-inline-start:37px;z-index:3;display:flex;flex-direction:column;align-items:center;}
 .cover-pendant .string{width:2px;height:24px;background:rgba(255,253,249,.55);}
 .cover-pendant svg{width:16px;height:16px;fill:var(--clr-secondary);margin-top:-1px;}
 
-.cover-text{position:absolute;top:122px;inset-inline-end:22px;z-index:3;max-width:80%;text-align:right;}
+.cover-text{position:absolute;top:98px;inset-inline-end:85px;z-index:3;max-width:80%;text-align:right;}
 .cover-name{
   color:var(--clr-secondary-light);font-weight:900;font-size:2rem;line-height:1.15;
   word-break:break-word;min-height:1.2em;
@@ -202,7 +202,7 @@ nav a:hover::after{width:100%;}
 .cover-subtitle{color:#fff;opacity:.9;font-weight:800;font-size:1.02rem;margin-top:4px;}
 
 .cover-sun{
-  position:absolute;left:50%;bottom:-30px;transform:translateX(-50%);
+  position:absolute;left:50%;bottom:-110px;transform:translateX(-50%);
   width:250px;height:250px;border-radius:50%;
   background:radial-gradient(circle at 40% 35%, #FFE9C2, #F5B15C 75%);
 }
@@ -216,7 +216,7 @@ nav a:hover::after{width:100%;}
   width:225px;height:auto;filter:drop-shadow(0 10px 16px rgba(0,0,0,.18));
 }
 .cover-child-photo{
-  position:absolute;bottom:0;left:50%;transform:translateX(-50%);z-index:3;
+  position:absolute;bottom:-60px;left:50%;transform:translateX(-50%);z-index:3;
   width:92%;max-height:300px;object-fit:contain;object-position:bottom;
   filter:drop-shadow(0 12px 18px rgba(0,0,0,.25));
   display:none;
@@ -504,12 +504,12 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
   .cover-mask{height:82px;}
   .cover-mask-logo{height:130px;top:-39px;}
   .cover-sun{width:190px;height:190px;}
-  .cover-stars{top:108px;inset-inline-start:16px;}
-  .cover-pendant{top:86px;inset-inline-end:26px;}
+  .cover-stars{top:120px;inset-inline-end:35px;}
+  .cover-pendant{top:128px;inset-inline-start:25px;}
   .cover-pendant .string{height:18px;}
   .cover-name{font-size:1.4rem;}
   .cover-subtitle{font-size:.8rem;}
-  .cover-text{top:88px;inset-inline-end:16px;}
+  .cover-text{top:75px;inset-inline-start:20px;}
   .cover-child{width:170px;}
   .cover-child-photo{width:92%;max-height:220px;}
   .photo-hint{top:88px;inset-inline-start:16px;font-size:.54rem;padding:4px 8px;}
@@ -594,9 +594,6 @@ footer small{color:var(--clr-ink-soft);font-size:.82rem;}
     <div class="hero-visual">
       <div class="book-cover">
         <div class="cover-sun"></div>
-        <div class="cover-cloud c3"></div>
-        <div class="cover-cloud c1"></div>
-        <div class="cover-cloud c2"></div>
 
         <!-- الغلاف العلوي الأبيض + اللوقو والاسم فقط في الوسط -->
         <svg class="cover-mask" viewBox="0 0 290 110" preserveAspectRatio="none">
