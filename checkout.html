@@ -495,7 +495,7 @@ async function submitOrder(subtotal, getDiscount, getCouponCode){
       const itemIdx = pendingItems.findIndex(p => p.item_index === row.item_index);
       const files = itemsData[itemIdx].photoFiles;
       if (files && files.length) {
-        const urls = await uploadMultipleToDrive(files, row.order_number + '-' + row.item_index);
+        const urls = await uploadMultipleToDrive(files, row.order_number);
         await supabaseClient.rpc('add_item_photos', { p_item_id: row.item_id, p_photo_urls: urls });
       }
     }
