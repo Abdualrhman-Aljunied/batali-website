@@ -250,7 +250,7 @@ function renderItemStep(idx){
     <div class="section-title-sm">تخصيص: ${pending.product_title} ${pending.copy_label||''}</div>
 
     <label class="required">اسم الطفل/ة الكامل</label>
-    <input type="text" id="childName" placeholder="مثال: عبدالرحمن محمد" value="${data.childName||''}">
+    <input type="text" id="childName" placeholder="اسم الطفل/ة" value="${data.childName||''}">
     <div class="field-error" id="err_childName">الرجاء إدخال اسم الطفل/ة</div>
 
     <label class="required">عمر الطفل/ة</label>
@@ -270,14 +270,14 @@ function renderItemStep(idx){
     <input type="file" id="childPhotos" accept="image/*" multiple>
     <div class="field-error" id="err_photos">الرجاء رفع صورة واحدة على الأقل</div>
     <div class="photo-guide">
-      <div><img src="images/child-photo.webp" alt="مثال" onclick="openLightbox()"><div class="cap">اضغط على الصورة لتكبيرها 🔍</div></div>
+      <div><img src="images/child-photo.png" alt="مثال" onclick="openLightbox()"><div class="cap">اضغط على الصورة لتكبيرها 🔍</div></div>
       <div class="tips-cols">
         <ul><li>صورة حديثة وواضحة</li><li>الوجه للأمام مباشرة</li></ul>
         <ul><li>إضاءة جيدة وطبيعية</li><li>بدون نظارات شمسية أو قبعة</li></ul>
       </div>
     </div>
 
-    <div class="section-title-sm">القيمة أو الهواية المراد غرسها في طفلك/طفلتك <span style="color:var(--clr-primary);">*</span></div>
+    <div class="section-title-sm">القيمة أو الهواية المراد غرسها وتنميتها في طفلك/طفلتك <span style="color:var(--clr-primary);">*</span></div>
     <div class="value-selected-banner" id="valueBanner"><span id="valueBannerText"></span></div>
     <div class="value-accordion" id="valueAccordion"></div>
     <input type="hidden" id="storyValue" value="${data.storyValue||''}">
@@ -294,10 +294,10 @@ function renderItemStep(idx){
       <div class="d-body"><div class="dedication-default-text">${DEFAULT_DEDICATION.replace(/\n/g,'<br>')}</div></div>
     </div>
     <div class="dedication-option" id="dedOptCustom" data-type="custom">
-      <div class="d-title">✍️ كتابة إهداء خاص</div>
+      <div class="d-title">✍️ كتابة إهداء خاص بك</div>
       <div class="d-body">
         <label class="required">اكتب إهداءك الخاص لطفلك/طفلتك</label>
-        <textarea id="dedicationCustom" placeholder="اكتب هنا كلماتك الخاصة التي تريد أن تصل لطفلك/طفلتك من خلال القصة...">${data.dedicationCustom||''}</textarea>
+        <textarea id="dedicationCustom" placeholder="اكتب هنا كلماتك الخاصة التي تريد أن تصل لطفلك/طفلتك">${data.dedicationCustom||''}</textarea>
         <div class="field-error" id="err_dedicationCustom">الرجاء كتابة نص الإهداء</div>
       </div>
     </div>
