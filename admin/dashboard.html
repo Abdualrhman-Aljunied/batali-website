@@ -255,8 +255,7 @@ function openDetail(id) {
     <div class="detail-row"><b>السعر الأساسي</b><span>${o.subtotal} ر.س</span></div>
     <div class="detail-row"><b>الخصم</b><span>${o.discount_amount>0 ? '−'+o.discount_amount+' ر.س ('+(o.coupon_code||'')+')' : '—'}</span></div>
     <div class="detail-row"><b>الإجمالي</b><span>${o.total} ر.س</span></div>
-    <div class="detail-row"><b>سند التحويل</b><span>${o.receipt_url ? `<a href="${o.receipt_url}" target="_blank">عرض السند</a>` : 'لم يُرفع بعد'}</span></div>
-
+   <div class="detail-row"><b>سند التحويل</b><span>${o.receipt_url ? `<a href="${o.receipt_url}" target="_blank" class="btn btn-outline" style="padding:5px 12px;font-size:.75rem;margin:2px;">عرض السند</a>` : 'لم يُرفع بعد'}</span></div>
     <h4 style="margin:18px 0 10px;color:var(--clr-primary);">المنتجات (${o.items.length})</h4>
     ${itemsHtml}
 
