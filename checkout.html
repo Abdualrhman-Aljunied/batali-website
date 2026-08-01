@@ -47,6 +47,40 @@ input,select,textarea{max-width:100%;}
 .consent-row input{width:auto;margin-top:3px;accent-color:var(--clr-primary);}
 .consent-row label{margin:0;font-weight:500;font-size:.85rem;line-height:1.8;}
 
+/* منتقي القيم الهرمي */
+.value-selected-banner{display:none;align-items:center;justify-content:space-between;gap:10px;background:var(--clr-teal-light);color:var(--clr-teal);border-radius:12px;padding:12px 16px;margin-bottom:10px;font-weight:700;font-size:.88rem;}
+.value-selected-banner.show{display:flex;}
+.value-selected-banner button{font-size:.78rem;text-decoration:underline;color:var(--clr-teal);flex-shrink:0;}
+.value-accordion{border-radius:14px;overflow:hidden;border:2px solid color-mix(in srgb, var(--clr-primary) 15%, transparent);}
+.value-cat{border-bottom:1px solid color-mix(in srgb, var(--clr-ink) 8%, transparent);}
+.value-cat:last-child{border-bottom:none;}
+.value-cat-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;background:var(--clr-paper);font-weight:700;font-size:.9rem;transition:background .2s;}
+.value-cat-head:hover{background:var(--clr-cream);}
+.value-cat-head .vleft{display:flex;align-items:center;gap:10px;}
+.value-cat-head .vcheck{width:18px;height:18px;border-radius:50%;background:var(--clr-teal);color:#fff;font-size:.7rem;display:none;align-items:center;justify-content:center;flex-shrink:0;}
+.value-cat.has-selection .vcheck{display:flex;}
+.value-cat-head .chev{transition:transform .25s;color:var(--clr-ink-soft);flex-shrink:0;}
+.value-cat.open .chev{transform:rotate(180deg);}
+.value-cat.has-selection .value-cat-head{background:color-mix(in srgb, var(--clr-primary) 6%, transparent);}
+.value-cat-body{max-height:0;overflow:hidden;transition:max-height .35s ease;background:var(--clr-cream);}
+.value-cat.open .value-cat-body{max-height:700px;}
+.value-chip-grid{display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px;}
+.value-chip{padding:8px 14px;border-radius:100px;background:var(--clr-paper);font-size:.83rem;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .2s;}
+.value-chip:hover{border-color:var(--clr-primary);}
+.value-chip.selected{background:var(--clr-primary);color:#fff;}
+.value-other-row{padding:14px 16px;cursor:pointer;font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:10px;background:var(--clr-paper);transition:background .2s;}
+.value-other-row:hover{background:var(--clr-cream);}
+.value-other-row.selected{background:color-mix(in srgb, var(--clr-primary) 10%, transparent);color:var(--clr-primary);}
+
+/* بطاقات الإهداء */
+.dedication-option{border:2px solid color-mix(in srgb, var(--clr-primary) 15%, transparent);border-radius:14px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:all .2s;}
+.dedication-option:hover{border-color:var(--clr-primary);}
+.dedication-option.selected{border-color:var(--clr-primary);background:color-mix(in srgb, var(--clr-primary) 6%, transparent);}
+.dedication-option .d-title{font-weight:800;font-size:.92rem;display:flex;align-items:center;gap:8px;}
+.dedication-option .d-body{margin-top:10px;display:none;}
+.dedication-option.selected .d-body{display:block;}
+.dedication-default-text{background:var(--clr-cream);border-radius:10px;padding:12px 14px;font-size:.85rem;line-height:2;color:var(--clr-ink);}
+
 .wizard-nav{display:flex;gap:12px;margin-top:26px;}
 .wizard-nav .btn{flex:1;}
 
@@ -86,7 +120,7 @@ input,select,textarea{max-width:100%;}
   </div>
 </div>
 
-<div class="lightbox" id="lightbox" onclick="closeLightbox()"><img src="images/child-photo.png" alt="مثال"></div>
+<div class="lightbox" id="lightbox" onclick="closeLightbox()"><img src="images/child-photo.webp" alt="مثال"></div>
 
 <div class="page-footer">© 2026 منصة بطلي — <a href="index.html" style="text-decoration:underline;">العودة للصفحة الرئيسية</a></div>
 
@@ -156,10 +190,14 @@ function renderParentStep(){
     <div class="field-error" id="err_phone">الرجاء إدخال رقم جوال صحيح (أرقام فقط)</div>
 
     <label>البريد الإلكتروني (اختياري)</label>
-    <input type="email" id="email" value="${parentInfo.email||''}">
+    <input type="email" id="email" placeholder="example@email.com" value="${parentInfo.email||''}">
+
+    <label class="required">المحافظة</label>
+    <input type="text" id="governorate" placeholder="مثال: صنعاء" value="${parentInfo.governorate||''}">
+    <div class="field-error" id="err_governorate">الرجاء إدخال المحافظة</div>
 
     <label class="required">المدينة</label>
-    <input type="text" id="city" value="${parentInfo.city||''}">
+    <input type="text" id="city" placeholder="مثال: حدة" value="${parentInfo.city||''}">
     <div class="field-error" id="err_city">الرجاء إدخال المدينة</div>
 
     <div class="wizard-nav">
@@ -172,19 +210,37 @@ function renderParentStep(){
   document.getElementById('nextBtn').addEventListener('click', () => {
     const parentName = document.getElementById('parentName').value.trim();
     const phone = phoneInput.value.trim();
+    const governorate = document.getElementById('governorate').value.trim();
     const city = document.getElementById('city').value.trim();
     let ok = true;
     toggleErr('err_parentName', !parentName); if(!parentName) ok=false;
     toggleErr('err_phone', phone.length < 8); if(phone.length < 8) ok=false;
+    toggleErr('err_governorate', !governorate); if(!governorate) ok=false;
     toggleErr('err_city', !city); if(!city) ok=false;
     if(!ok) return;
-    parentInfo = { parentName, phone, email: document.getElementById('email').value.trim(), city };
+    parentInfo = { parentName, phone, email: document.getElementById('email').value.trim(), governorate, city };
     saveProgress();
     currentStep++;
     renderStep();
   });
 }
 function toggleErr(id, cond){ document.getElementById(id).classList.toggle('show', cond); }
+
+/* ---------- بيانات القيم الهرمية ---------- */
+const VALUE_CATEGORIES = [
+  { icon:'🕌', name:'القيم الدينية', items:['المحافظة على الصلاة','التعلق بالقرآن الكريم','زيادة حب الله ورسوله ﷺ','التقرب إلى الله بالأعمال الصالحة'] },
+  { icon:'👨‍👩‍👧', name:'القيم الأسرية', items:['بر الوالدين','احترام أفراد الأسرة','مساعدة الإخوة'] },
+  { icon:'🌟', name:'القيم الأخلاقية', items:['الصدق','الأمانة','حسن الأدب','الاحترام','التعاون','الكرم','مساعدة المحتاجين','التسامح','الكلمة الطيبة','الاعتذار عند الخطأ'] },
+  { icon:'💪', name:'بناء الشخصية', items:['الثقة بالنفس','تحمل المسؤولية','الشجاعة','الاعتماد على النفس','الصبر'] },
+  { icon:'📚', name:'التعلم والمدرسة', items:['حب الدراسة','حب القراءة','إنجاز الواجبات بالنفس','الإبداع والابتكار','اكتشاف أشياء جديدة'] },
+  { icon:'🤝', name:'العلاقات الاجتماعية', items:['الصداقة الجيدة','مشاركة الألعاب مع الآخرين','حسن التواصل مع الآخرين','تقديم المساعدة للآخرين'] },
+  { icon:'🌿', name:'العادات اليومية', items:['تنظيم الوقت','التغذية الصحية','الالتزام بوقت النوم','ترتيب الغرفة'] },
+  { icon:'❤️', name:'المشاعر والذكاء العاطفي', items:['التحكم في الغضب','التفاؤل','اللطف مع الآخرين','تقبل الخطأ والتعلم منه'] },
+  { icon:'🎨', name:'الهوايات والمهارات', items:['كرة القدم','السباحة','ركوب الدراجة','الرسم','التلوين','الأشغال اليدوية','التصوير','الخياطة','الطبخ','النشيد والغناء','التكنولوجيا','الزراعة'] },
+];
+const OTHER_VALUE_LABEL = 'اختيار قيمة أو هواية أخرى';
+const DEFAULT_DEDICATION = `إلى بطلنا المميز
+هذه القصة صُنعت خصيصًا لك، لترافقك في رحلة مليئة بالتعلّم والمرح والاكتشاف. تذكّر دائمًا أن كل خطوة تخطوها، وكل فكرة تتعلمها، وكل تحدٍ تتجاوزه، تقرّبك أكثر من أفضل نسخة من نفسك. نحن نؤمن بأن بداخلك بطلًا قادرًا على تحقيق الكثير، وهذه مجرد بداية رحلتك.`;
 
 /* ---------- خطوة تخصيص منتج ---------- */
 function renderItemStep(idx){
@@ -193,66 +249,63 @@ function renderItemStep(idx){
   stepContent.innerHTML = `
     <div class="section-title-sm">تخصيص: ${pending.product_title} ${pending.copy_label||''}</div>
 
-    <label class="required">اسم الطفل الكامل</label>
-    <input type="text" id="childName" value="${data.childName||''}">
-    <div class="field-error" id="err_childName">الرجاء إدخال اسم الطفل</div>
+    <label class="required">اسم الطفل/ة الكامل</label>
+    <input type="text" id="childName" placeholder="مثال: عبدالرحمن محمد" value="${data.childName||''}">
+    <div class="field-error" id="err_childName">الرجاء إدخال اسم الطفل/ة</div>
 
-    <label class="required">عمر الطفل</label>
-    <div class="picker-field placeholder" id="ageField" data-value="${data.childAge||''}">${data.childAge ? data.childAge+' سنوات' : 'اختر عمر الطفل'}</div>
+    <label class="required">عمر الطفل/ة</label>
+    <div class="picker-field placeholder" id="ageField" data-value="${data.childAge||''}">${data.childAge ? data.childAge+' سنوات' : 'اختر عمر الطفل/ة'}</div>
     <div class="picker-panel" id="agePanel"></div>
-    <div class="field-error" id="err_age">الرجاء اختيار عمر الطفل</div>
+    <div class="field-error" id="err_age">الرجاء اختيار عمر الطفل/ة</div>
 
-    <label class="required">جنس الطفل</label>
-    <div class="picker-field placeholder" id="genderField" data-value="${data.childGender||''}">${data.childGender || 'اختر جنس الطفل'}</div>
+    <label class="required">جنس الطفل/ة</label>
+    <div class="picker-field placeholder" id="genderField" data-value="${data.childGender||''}">${data.childGender || 'اختر جنس الطفل/ة'}</div>
     <div class="picker-panel gender-panel" id="genderPanel">
       <div class="picker-option" data-value="ولد">ولد</div>
       <div class="picker-option" data-value="بنت">بنت</div>
     </div>
-    <div class="field-error" id="err_gender">الرجاء اختيار جنس الطفل</div>
+    <div class="field-error" id="err_gender">الرجاء اختيار جنس الطفل/ة</div>
 
-    <label>أي معلومة عن الطفل تحبون ذكرها في القصة</label>
-    <textarea id="childNote">${data.childNote||''}</textarea>
-
-    <label class="required">صورة الطفل</label>
+    <label class="required">صورة الطفل/ة</label>
     <input type="file" id="childPhotos" accept="image/*" multiple>
     <div class="field-error" id="err_photos">الرجاء رفع صورة واحدة على الأقل</div>
     <div class="photo-guide">
-      <div><img src="images/child-photo.png" alt="مثال" onclick="openLightbox()"><div class="cap">اضغط على الصورة لتكبيرها 🔍</div></div>
+      <div><img src="images/child-photo.webp" alt="مثال" onclick="openLightbox()"><div class="cap">اضغط على الصورة لتكبيرها 🔍</div></div>
       <div class="tips-cols">
-        <ul><li>صورة واضحة وحديثة</li><li>من الأمام</li><li>للوجه كاملاً</li></ul>
-        <ul><li>إضاءة جيدة ودقة عالية</li><li>بدون نظارة شمسية أو قبعة</li><li>ليست بعيدة</li></ul>
+        <ul><li>صورة حديثة وواضحة</li><li>الوجه للأمام مباشرة</li></ul>
+        <ul><li>إضاءة جيدة وطبيعية</li><li>بدون نظارات شمسية أو قبعة</li></ul>
       </div>
     </div>
 
-    <div class="section-title-sm">القيمة المراد غرسها في طفلك <span style="color:var(--clr-primary);">*</span></div>
-    <select id="storyValue"><option value="">اختر القيمة...</option></select>
-    <div class="field-error" id="err_value">الرجاء اختيار القيمة</div>
+    <div class="section-title-sm">القيمة أو الهواية المراد غرسها في طفلك/طفلتك <span style="color:var(--clr-primary);">*</span></div>
+    <div class="value-selected-banner" id="valueBanner"><span id="valueBannerText"></span></div>
+    <div class="value-accordion" id="valueAccordion"></div>
+    <input type="hidden" id="storyValue" value="${data.storyValue||''}">
+    <div class="field-error" id="err_value">الرجاء اختيار القيمة أو الهواية</div>
     <div id="valueOtherWrap" style="display:none;">
-      <label>اكتب القيمة أو الهواية التي تريدها</label>
-      <input type="text" id="valueOther" value="${data.storyValueOther||''}">
-      <div class="field-error" id="err_valueOther">الرجاء كتابة القيمة</div>
+      <label class="required">اكتب القيمة أو الهواية التي تريدها</label>
+      <input type="text" id="valueOther" placeholder="مثال: حب الرياضة، تعلم لغة جديدة، تقوية الثقة بالنفس" value="${data.storyValueOther||''}">
+      <div class="field-error" id="err_valueOther">الرجاء كتابة القيمة أو الهواية</div>
     </div>
 
     <div class="section-title-sm">الإهداء الذي يظهر داخل القصة <span style="color:var(--clr-primary);">*</span></div>
-    <select id="dedicationType">
-      <option value="">اختر...</option>
-      <option value="named">إهداء (باسم صاحب الإهداء)</option>
-      <option value="custom">اختيار آخر</option>
-    </select>
+    <div class="dedication-option" id="dedOptDefault" data-type="default">
+      <div class="d-title">🎁 إهداء بطلنا المميز (الإهداء الافتراضي)</div>
+      <div class="d-body"><div class="dedication-default-text">${DEFAULT_DEDICATION.replace(/\n/g,'<br>')}</div></div>
+    </div>
+    <div class="dedication-option" id="dedOptCustom" data-type="custom">
+      <div class="d-title">✍️ كتابة إهداء خاص</div>
+      <div class="d-body">
+        <label class="required">اكتب إهداءك الخاص لطفلك/طفلتك</label>
+        <textarea id="dedicationCustom" placeholder="اكتب هنا كلماتك الخاصة التي تريد أن تصل لطفلك/طفلتك من خلال القصة...">${data.dedicationCustom||''}</textarea>
+        <div class="field-error" id="err_dedicationCustom">الرجاء كتابة نص الإهداء</div>
+      </div>
+    </div>
+    <input type="hidden" id="dedicationType" value="${data.dedicationType||''}">
     <div class="field-error" id="err_dedication">الرجاء اختيار نوع الإهداء</div>
-    <div id="dedicationNamedWrap" style="display:none;">
-      <label>اسم صاحب الإهداء</label>
-      <input type="text" id="dedicationName" value="${data.dedicationName||''}">
-      <div class="field-error" id="err_dedicationName">الرجاء كتابة اسم صاحب الإهداء</div>
-    </div>
-    <div id="dedicationCustomWrap" style="display:none;">
-      <label>اكتب نص الإهداء الذي تريده</label>
-      <textarea id="dedicationCustom">${data.dedicationCustom||''}</textarea>
-      <div class="field-error" id="err_dedicationCustom">الرجاء كتابة نص الإهداء</div>
-    </div>
 
-    <label>هل هناك هواية أو تفصيلة تحب إضافتها لشخصية الطفل في القصة؟</label>
-    <textarea id="hobbyDetail">${data.hobbyDetail||''}</textarea>
+    <label>هل هناك هواية أو تفصيلة تحب إضافتها لشخصية الطفل/ة في القصة؟</label>
+    <textarea id="hobbyDetail" placeholder="مثال: يحب كرة القدم، يحلم أن يصبح طبيباً، شخصيته مرحة ونشيطة...">${data.hobbyDetail||''}</textarea>
 
     <div class="wizard-nav">
       <button class="btn btn-outline" id="prevBtn">السابق</button>
@@ -275,28 +328,81 @@ function renderItemStep(idx){
   if (data.childGender) genderPanel.querySelector(`[data-value="${data.childGender}"]`)?.classList.add('selected');
   setupPicker(genderField, genderPanel, 'err_gender');
 
-  // القيم
-  const VALUES = ['الصدق','الأمانة','الشجاعة','بر الوالدين','التعاون','حسن الخلق','الصبر','الكرم','احترام الآخرين','تنظيم الوقت','تنمية المهارات','اختيار آخر'];
-  const storyValueEl = document.getElementById('storyValue');
-  VALUES.forEach(v => { const o=document.createElement('option'); o.value=v; o.textContent=v; if(data.storyValue===v) o.selected=true; storyValueEl.appendChild(o); });
-  document.getElementById('valueOtherWrap').style.display = storyValueEl.value === 'اختيار آخر' ? 'block' : 'none';
-  storyValueEl.addEventListener('change', () => {
-    document.getElementById('valueOtherWrap').style.display = storyValueEl.value === 'اختيار آخر' ? 'block' : 'none';
-    toggleErr('err_value', false);
-  });
+  // منتقي القيم الهرمي
+  buildValueAccordion(document.getElementById('valueAccordion'), data.storyValue||'');
+  if (data.storyValue && data.storyValue !== OTHER_VALUE_LABEL) {
+    document.getElementById('valueBanner').classList.add('show');
+    document.getElementById('valueBannerText').textContent = '✓ القيمة المختارة: ' + data.storyValue;
+  }
+  document.getElementById('valueOtherWrap').style.display = data.storyValue === OTHER_VALUE_LABEL ? 'block' : 'none';
 
+  // بطاقات الإهداء
   const dedicationType = document.getElementById('dedicationType');
-  if (data.dedicationType) dedicationType.value = data.dedicationType;
-  document.getElementById('dedicationNamedWrap').style.display = dedicationType.value === 'named' ? 'block' : 'none';
-  document.getElementById('dedicationCustomWrap').style.display = dedicationType.value === 'custom' ? 'block' : 'none';
-  dedicationType.addEventListener('change', () => {
-    document.getElementById('dedicationNamedWrap').style.display = dedicationType.value === 'named' ? 'block' : 'none';
-    document.getElementById('dedicationCustomWrap').style.display = dedicationType.value === 'custom' ? 'block' : 'none';
-    toggleErr('err_dedication', false);
+  if (data.dedicationType) {
+    document.getElementById(data.dedicationType === 'default' ? 'dedOptDefault' : 'dedOptCustom').classList.add('selected');
+  }
+  document.querySelectorAll('.dedication-option').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('textarea')) return;
+      document.querySelectorAll('.dedication-option').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      dedicationType.value = card.dataset.type;
+      toggleErr('err_dedication', false);
+    });
   });
 
   document.getElementById('prevBtn').addEventListener('click', () => { collectItemStep(idx, false); currentStep--; renderStep(); });
   document.getElementById('nextBtn').addEventListener('click', () => { if (collectItemStep(idx, true)) { currentStep++; renderStep(); } });
+}
+
+function buildValueAccordion(container, current){
+  const isOther = current === OTHER_VALUE_LABEL;
+  container.innerHTML = VALUE_CATEGORIES.map((cat, ci) => {
+    const hasSelection = cat.items.includes(current);
+    return `
+      <div class="value-cat ${hasSelection?'has-selection open':''}" data-cat="${ci}">
+        <div class="value-cat-head">
+          <div class="vleft"><span class="vcheck">✓</span><span>${cat.icon} ${cat.name}</span></div>
+          <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="value-cat-body">
+          <div class="value-chip-grid">
+            ${cat.items.map(it => `<div class="value-chip ${it===current?'selected':''}" data-value="${it.replace(/"/g,'&quot;')}">${it}</div>`).join('')}
+          </div>
+        </div>
+      </div>`;
+  }).join('') + `
+    <div class="value-other-row ${isOther?'selected':''}" id="valueOtherRow">
+      <span>✏️</span><span>${OTHER_VALUE_LABEL}</span>
+    </div>
+  `;
+
+  container.querySelectorAll('.value-cat-head').forEach(head => {
+    head.addEventListener('click', () => {
+      const cat = head.closest('.value-cat');
+      const wasOpen = cat.classList.contains('open');
+      container.querySelectorAll('.value-cat.open').forEach(c => c.classList.remove('open'));
+      if (!wasOpen) cat.classList.add('open');
+    });
+  });
+  container.querySelectorAll('.value-chip').forEach(chip => {
+    chip.addEventListener('click', (e) => { e.stopPropagation(); selectStoryValue(chip.dataset.value); });
+  });
+  document.getElementById('valueOtherRow').addEventListener('click', () => selectStoryValue(OTHER_VALUE_LABEL));
+}
+
+function selectStoryValue(value){
+  document.getElementById('storyValue').value = value;
+  document.getElementById('valueOtherWrap').style.display = value === OTHER_VALUE_LABEL ? 'block' : 'none';
+  const banner = document.getElementById('valueBanner');
+  if (value && value !== OTHER_VALUE_LABEL) {
+    banner.classList.add('show');
+    document.getElementById('valueBannerText').textContent = '✓ القيمة المختارة: ' + value;
+  } else {
+    banner.classList.remove('show');
+  }
+  toggleErr('err_value', false);
+  buildValueAccordion(document.getElementById('valueAccordion'), value);
 }
 
 function setupPicker(fieldEl, panelEl, errId){
@@ -339,15 +445,11 @@ function collectItemStep(idx, validate){
     const hasPhotos = (photosInput.files && photosInput.files.length>0) || (existingPhotos && existingPhotos.length>0);
     toggleErr('err_photos', !hasPhotos); if(!hasPhotos) ok=false;
     toggleErr('err_value', !storyValueEl.value); if(!storyValueEl.value) ok=false;
-    if (storyValueEl.value === 'اختيار آخر') {
+    if (storyValueEl.value === OTHER_VALUE_LABEL) {
       const other = document.getElementById('valueOther').value.trim();
       toggleErr('err_valueOther', !other); if(!other) ok=false;
     }
     toggleErr('err_dedication', !dedicationType.value); if(!dedicationType.value) ok=false;
-    if (dedicationType.value === 'named') {
-      const n = document.getElementById('dedicationName').value.trim();
-      toggleErr('err_dedicationName', !n); if(!n) ok=false;
-    }
     if (dedicationType.value === 'custom') {
       const c = document.getElementById('dedicationCustom').value.trim();
       toggleErr('err_dedicationCustom', !c); if(!c) ok=false;
@@ -359,11 +461,9 @@ function collectItemStep(idx, validate){
     childName,
     childAge: ageField.dataset.value,
     childGender: genderField.dataset.value,
-    childNote: document.getElementById('childNote').value.trim(),
     storyValue: storyValueEl.value,
     storyValueOther: document.getElementById('valueOther') ? document.getElementById('valueOther').value.trim() : '',
     dedicationType: dedicationType.value,
-    dedicationName: document.getElementById('dedicationName') ? document.getElementById('dedicationName').value.trim() : '',
     dedicationCustom: document.getElementById('dedicationCustom') ? document.getElementById('dedicationCustom').value.trim() : '',
     hobbyDetail: document.getElementById('hobbyDetail').value.trim(),
     photoFiles: (photosInput.files && photosInput.files.length>0) ? photosInput.files : existingPhotos,
@@ -379,11 +479,11 @@ function renderReviewStep(){
 
   const itemsHtml = pendingItems.map((p, i) => {
     const d = itemsData[i];
-    const valueLabel = d.storyValue === 'اختيار آخر' ? d.storyValueOther : d.storyValue;
-    const dedicationLabel = d.dedicationType === 'named' ? `باسم: ${d.dedicationName}` : d.dedicationCustom;
+    const valueLabel = d.storyValue === OTHER_VALUE_LABEL ? d.storyValueOther : d.storyValue;
+    const dedicationLabel = d.dedicationType === 'default' ? 'الإهداء الافتراضي (بطلنا المميز)' : d.dedicationCustom;
     return `<div class="review-item">
       <div style="display:flex;justify-content:space-between;"><b>${p.product_title} ${p.copy_label||''}</b><span class="edit-link" onclick="editItem(${i})">تعديل</span></div>
-      الطفل: ${d.childName} — ${d.childAge} سنوات — ${d.childGender}<br>
+      الطفل/ة: ${d.childName} — ${d.childAge} سنوات — ${d.childGender}<br>
       القيمة: ${valueLabel} | الإهداء: ${dedicationLabel}<br>
       الصور: ${d.photoFiles ? d.photoFiles.length : 0} صورة
     </div>`;
@@ -391,7 +491,7 @@ function renderReviewStep(){
 
   stepContent.innerHTML = `
     <div class="section-title-sm">مراجعة الطلب</div>
-    <div class="review-item"><b>ولي الأمر:</b> ${parentInfo.parentName} — ${parentInfo.phone} — ${parentInfo.city}</div>
+    <div class="review-item"><b>ولي الأمر:</b> ${parentInfo.parentName} — ${parentInfo.phone} — ${parentInfo.governorate} — ${parentInfo.city}</div>
     ${itemsHtml}
 
     <div id="couponBox" style="margin:16px 0;">
@@ -473,10 +573,10 @@ async function submitOrder(subtotal, getDiscount, getCouponCode){
         product_id: p.product_id,
         product_title: p.product_title,
         product_price: p.product_price,
-        child_name: d.childName, child_age: d.childAge, child_gender: d.childGender, child_note: d.childNote,
-        story_value: d.storyValue === 'اختيار آخر' ? d.storyValueOther : d.storyValue,
+        child_name: d.childName, child_age: d.childAge, child_gender: d.childGender,
+        story_value: d.storyValue === OTHER_VALUE_LABEL ? d.storyValueOther : d.storyValue,
         dedication_type: d.dedicationType,
-        dedication_text: d.dedicationType === 'named' ? d.dedicationName : d.dedicationCustom,
+        dedication_text: d.dedicationType === 'default' ? DEFAULT_DEDICATION : d.dedicationCustom,
         hobby_detail: d.hobbyDetail,
         consent_privacy: true,
       };
@@ -485,7 +585,7 @@ async function submitOrder(subtotal, getDiscount, getCouponCode){
     const { data, error } = await supabaseClient.rpc('create_full_order', {
       p_parent_name: parentInfo.parentName, p_phone: parentInfo.phone, p_email: parentInfo.email, p_city: parentInfo.city,
       p_coupon_code: getCouponCode() || null, p_subtotal: subtotal, p_discount_amount: discount, p_total: total,
-      p_items: itemsPayload,
+      p_items: itemsPayload, p_governorate: parentInfo.governorate,
     });
     if (error) throw error;
     createdRows = data;
