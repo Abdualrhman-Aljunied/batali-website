@@ -468,8 +468,17 @@ async function saveProduct(id) {
 }
 
 async function deleteProduct(id) {
-  if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
-  await supabaseClient.from('products').delete().eq('id', id);
+  if (!confirm('هل أنت متأكد من حذف هذا المنتج نهائياً؟')) return;
+  const { error } = await supabaseClient.from('products').delete().eq('id', id);
+  if (error) {
+    if (error.code === '23503') {
+      if (confirm('لا يمكن حذف هذا المنتج نهائياً لأنه مرتبط بطلبات سابقة لعملاء.\nهل تريد إخفاءه من الموقع بدلاً من ذلك؟')) {
+        await supabaseClient.from('products').update({ active: false }).eq('id', id);
+      }
+    } else {
+      alert('فشل الحذف: ' + error.message);
+    }
+  }
   loadProducts();
 }
 
