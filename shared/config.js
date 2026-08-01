@@ -16,7 +16,7 @@ const WHATSAPP_PHONE = '967778732472';
 const BANKS = [
   { name: 'العمقي للصرافة', accountName: 'عبدالرحمن منير صالح الجنيد', accountNumber: '254169670', color: '#1a9a6a', logo: './images/bank-amaqi.png' },
   { name: 'البسيري للصرافة', accountName: 'عبدالرحمن منير صالح الجنيد', accountNumber: '23257868', color: '#2A6FB0', logo: './images/bank-bassir.png' },
-  { name: 'بنك الكريمي', accountName: 'عبدالرحمن منير صالح الجنيد', accountNumber: '484654654', color: '#7039b6', logo: './images/images%20(6).png' },
+  { name: 'بنك الكريمي', accountName: 'عبدالرحمن منير صالح الجنيد', accountNumber: '484654654', color: '#7039b6', logo: './images/new_logo_color.svg' },
 ];
 
 // ============================================================
