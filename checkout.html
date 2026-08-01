@@ -182,22 +182,22 @@ function renderParentStep(){
   stepContent.innerHTML = `
     <div class="section-title-sm">بيانات ولي الأمر</div>
     <label class="required">اسم ولي الأمر</label>
-    <input type="text" id="parentName" placeholder="الاسم الثلاثي أو الرباعي" value="${parentInfo.parentName||''}">
+    <input type="text" id="parentName" placeholder="الاسم الثلاثي" value="${parentInfo.parentName||''}">
     <div class="field-error" id="err_parentName">الرجاء إدخال اسم ولي الأمر</div>
 
     <label class="required">رقم جوال الواتساب</label>
-    <div class="phone-row"><input type="tel" id="phone" placeholder="77xxxxxxx" inputmode="numeric" value="${parentInfo.phone||''}"></div>
+    <div class="phone-row"><input type="tel" id="phone" placeholder="7xxxxxxxx" inputmode="numeric" value="${parentInfo.phone||''}"></div>
     <div class="field-error" id="err_phone">الرجاء إدخال رقم جوال صحيح (أرقام فقط)</div>
 
     <label>البريد الإلكتروني (اختياري)</label>
     <input type="email" id="email" placeholder="example@email.com" value="${parentInfo.email||''}">
 
     <label class="required">المحافظة</label>
-    <input type="text" id="governorate" placeholder="مثال: صنعاء" value="${parentInfo.governorate||''}">
+    <input type="text" id="governorate" placeholder="مثال: حضرموت" value="${parentInfo.governorate||''}">
     <div class="field-error" id="err_governorate">الرجاء إدخال المحافظة</div>
 
     <label class="required">المدينة</label>
-    <input type="text" id="city" placeholder="مثال: حدة" value="${parentInfo.city||''}">
+    <input type="text" id="city" placeholder="مثال: تريم" value="${parentInfo.city||''}">
     <div class="field-error" id="err_city">الرجاء إدخال المدينة</div>
 
     <div class="wizard-nav">
