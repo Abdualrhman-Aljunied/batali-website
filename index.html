@@ -1143,6 +1143,12 @@ document.getElementById('privacyLink').addEventListener('click', openPrivacy);
 document.getElementById('privacyLinkMobile').addEventListener('click', (e)=>{ closeMobileNav(); openPrivacy(e); });
 document.getElementById('privacyClose').addEventListener('click', ()=> closeOverlay(privacyOverlay));
 document.querySelectorAll('.privacy-trigger').forEach(el => el.addEventListener('click', openPrivacy));
+// فتح نافذة سياسة الخصوصية تلقائياً عند القدوم من checkout
+window.addEventListener('load', () => {
+    if (window.location.hash === '#privacy') {
+        openOverlay(privacyOverlay);
+    }
+});
 
 /* MOBILE HAMBURGER MENU */
 const mobileNavOverlay = document.getElementById('mobileNavOverlay');
