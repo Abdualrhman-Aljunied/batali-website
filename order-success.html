@@ -78,7 +78,11 @@
 
     <form id="receiptForm" style="text-align:right;">
       <label class="required">رفع سند التحويل</label>
-      <input type="file" id="receiptFile" accept="image/*" required>
+      <input
+      type="file"
+      id="receiptFile"
+      accept="image/*,.pdf,application/pdf"
+      required>
       <button type="submit" class="btn btn-block" id="receiptBtn" style="margin-top:16px;">رفع السند</button>
       <div id="receiptMsg"></div>
     </form>
